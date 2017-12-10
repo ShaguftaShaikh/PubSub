@@ -48,7 +48,7 @@ public class MainMenu implements Serializable {
 				username = sc.nextLine();
 				System.out.println("Enter password: ");
 				password = sc.nextLine();
-				signup(username, password);
+				signup();
 				break;
 			case 3:
 				forgotPassword();
@@ -64,13 +64,14 @@ public class MainMenu implements Serializable {
 
 	}
 
-	private static void signup(String username, String password)
+	private static void signup()
 			throws IOException, ClassNotFoundException, NoSuchAlgorithmException, InvalidKeySpecException {
+		User user = new User();
 		// TODO Auto-generated method stub
-		map = readUser();
+		/*map = readUser();
 		map.put(username, PasswordHash.generatePasswordHash(password));
 		writeUser(map);
-		System.out.println(map);
+		System.out.println(map);*/
 	}
 
 	private static void writeUser(Map<String, String> map) throws IOException {
@@ -111,6 +112,24 @@ public class MainMenu implements Serializable {
 				System.out.println("Enter your choice: ");
 				Scanner sc = new Scanner(System.in);
 				int choice = sc.nextInt();
+				switch(choice){
+					case 1:
+						break;
+					case 2:
+						break;
+					case 3:
+						break;
+					case 4:
+						break;
+					case 5:
+						break;
+					case 6: 
+						break;
+					case 7:
+						break;
+					default:
+						System.out.println("Invalid choice");
+				}
 			} else {
 				System.out.println("Username or Password Incorrect!");
 			}
