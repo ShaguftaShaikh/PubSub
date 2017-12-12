@@ -9,22 +9,40 @@ import java.io.Serializable;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Scanner;
 
+import com.pubsub.configuration.impl.PublishersImpl;
 import com.pubsub.utils.PasswordHash;
 import com.pubsub.utils.PubSubConstants;
 
 public class MainMenu implements Serializable {
 
 	private static final long serialVersionUID = 1L;
+	private static Map<String, String> map = new HashMap<>();
+	private static PublishersImpl publishers = new PublishersImpl();
+	private static Map<String, List<String>> publishersList = new HashMap<>();
 
-	private static Map<String, String> map = new HashMap<>();;
+	static {
+		/*try {
+			//publishersList = publishers.initializePublishersAndInterest();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}*/
+	}
 
 	public static void main(String[] args)
 			throws IOException, ClassNotFoundException, NoSuchAlgorithmException, InvalidKeySpecException {
-		Scanner sc = new Scanner(System.in);
+		mainmenu();
 
+	}
+
+	private static void mainmenu() {
+		// TODO Auto-generated method stub
+		Scanner sc = new Scanner(System.in);
 		String username, password;
 		while (true) {
 			System.out.println("1. Login");
@@ -40,15 +58,15 @@ public class MainMenu implements Serializable {
 				username = sc.nextLine();
 				System.out.println("Enter password: ");
 				password = sc.nextLine();
-				login(username, password);
+				//login(username, password);
 				break;
 			case 2:
-				System.out.println("Enter username: ");
-				sc.nextLine();
-				username = sc.nextLine();
-				System.out.println("Enter password: ");
-				password = sc.nextLine();
-				signup();
+				try {
+					new SignUp().signup();
+				} catch (NoSuchAlgorithmException | InvalidKeySpecException | ClassNotFoundException | IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				break;
 			case 3:
 				forgotPassword();
@@ -64,36 +82,7 @@ public class MainMenu implements Serializable {
 
 	}
 
-	private static void signup()
-			throws IOException, ClassNotFoundException, NoSuchAlgorithmException, InvalidKeySpecException {
-		User user = new User();
-		// TODO Auto-generated method stub
-		/*map = readUser();
-		map.put(username, PasswordHash.generatePasswordHash(password));
-		writeUser(map);
-		System.out.println(map);*/
-	}
-
-	private static void writeUser(Map<String, String> map) throws IOException {
-		// TODO Auto-generated method stub
-		FileOutputStream fileOutputStream = new FileOutputStream(PubSubConstants.USER_FILE);
-		ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
-		objectOutputStream.writeObject(map);
-		objectOutputStream.close();
-	}
-
-	@SuppressWarnings("unchecked")
-	private static Map<String, String> readUser() throws IOException, ClassNotFoundException {
-		// TODO Auto-generated method stub
-		FileInputStream fileInputStream = new FileInputStream(PubSubConstants.USER_FILE);
-		ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
-		Map<String, String> userMap = (Map<String, String>) objectInputStream.readObject();
-		objectInputStream.close();
-
-		return userMap;
-	}
-
-	private static void login(String username, String password)
+	/*private static void login(String username, String password)
 			throws NoSuchAlgorithmException, InvalidKeySpecException, ClassNotFoundException, IOException {
 		// TODO Auto-generated method stub
 		map = readUser();
@@ -112,27 +101,28 @@ public class MainMenu implements Serializable {
 				System.out.println("Enter your choice: ");
 				Scanner sc = new Scanner(System.in);
 				int choice = sc.nextInt();
-				switch(choice){
-					case 1:
-						break;
-					case 2:
-						break;
-					case 3:
-						break;
-					case 4:
-						break;
-					case 5:
-						break;
-					case 6: 
-						break;
-					case 7:
-						break;
-					default:
-						System.out.println("Invalid choice");
+				switch (choice) {
+				case 1:
+					break;
+				case 2:
+					break;
+				case 3:
+					break;
+				case 4:
+					break;
+				case 5:
+					break;
+				case 6:
+					break;
+				case 7:
+					break;
+				default:
+					System.out.println("Invalid choice");
 				}
+				sc.close();
 			} else {
 				System.out.println("Username or Password Incorrect!");
 			}
 		}
-	}
+	}*/
 }
