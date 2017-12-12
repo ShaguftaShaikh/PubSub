@@ -1,11 +1,6 @@
 package com.pubsub;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
@@ -15,10 +10,10 @@ import java.util.Scanner;
 
 import com.pubsub.configuration.Category;
 import com.pubsub.configuration.impl.CategoryImpl;
+import com.pubsub.dao.User;
 import com.pubsub.utils.PasswordHash;
-import com.pubsub.utils.PubSubConstants;
 
-public class SignUp implements Serializable{
+public class SignUp implements Serializable {
 
 	/**
 	 * 
@@ -27,12 +22,12 @@ public class SignUp implements Serializable{
 
 	public void signup() throws NoSuchAlgorithmException, InvalidKeySpecException, ClassNotFoundException, IOException {
 		User user = new User();
-		List<User> allUsers = readUser();
+		List<User> allUsers = User.readUser();
 		Scanner sc = new Scanner(System.in);
 		boolean flag = false;
 		System.out.println("Enter name: ");
 		String username = sc.nextLine();
-		
+
 		if (allUsers != null) {
 			for (User users : allUsers) {
 				String name = users.getName();
@@ -41,11 +36,13 @@ public class SignUp implements Serializable{
 					String password = sc.nextLine();
 					password = PasswordHash.generatePasswordHash(password);
 					user = chooseInterest(user);
-					
+
 					user.setName(username);
 					user.setPassword(password);
+					user.setPublisher(false);
+
 					allUsers.add(user);
-					writeUser(allUsers);
+					User.writeUser(allUsers);
 					break;
 				} else {
 					flag = true;
@@ -53,16 +50,19 @@ public class SignUp implements Serializable{
 			}
 		} else {
 			allUsers = new ArrayList<>();
-			
+
 			System.out.println("Enter password: ");
 			String password = sc.nextLine();
 			password = PasswordHash.generatePasswordHash(password);
-			
+
 			user = chooseInterest(user);
 			user.setName(username);
 			user.setPassword(password);
+			user.setPublisher(false);
+
+			choosePublishers(user);
 			allUsers.add(user);
-			writeUser(allUsers);
+			User.writeUser(allUsers);
 		}
 
 		if (flag) {
@@ -78,6 +78,7 @@ public class SignUp implements Serializable{
 		Category category = new CategoryImpl();
 		List<String> categories = category.getCategoryList();
 		List<String> userChoiceCategory = new ArrayList<String>();
+		Scanner sc = new Scanner(System.in);
 		int i;
 		while (true) {
 			for (i = 0; i < categories.size(); i++) {
@@ -85,7 +86,7 @@ public class SignUp implements Serializable{
 			}
 
 			System.out.println(i + 1 + ". EXIT");
-			Scanner sc = new Scanner(System.in);
+
 			System.out.println("Choose your interest");
 			int choice = sc.nextInt();
 
@@ -102,34 +103,14 @@ public class SignUp implements Serializable{
 		}
 	}
 
-	@SuppressWarnings("unchecked")
-	private static List<User> readUser() {
-		// TODO Auto-generated method stub
-		List<User> users = null;
-		FileInputStream fileInputStream;
-		try {
-			fileInputStream = new FileInputStream(PubSubConstants.USER_FILE);
-			ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
-			users = (List<User>) objectInputStream.readObject();
-			objectInputStream.close();
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			//e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			//e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			//e.printStackTrace();
+	private void choosePublishers(User user) {
+		List<String> userInterest = user.getUserInterest();
+		if (userInterest != null) {
+			for (String interest : userInterest) {
+
+			}
 		}
-		return users;
 	}
 
-	private static void writeUser(List<User> users) throws IOException {
-		// TODO Auto-generated method stub
-		FileOutputStream fileOutputStream = new FileOutputStream(PubSubConstants.USER_FILE);
-		ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
-		objectOutputStream.writeObject(users);
-		objectOutputStream.close();
-	}
+
 }

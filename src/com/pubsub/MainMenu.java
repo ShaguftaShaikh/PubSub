@@ -1,37 +1,23 @@
 package com.pubsub;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Scanner;
 
-import com.pubsub.configuration.impl.PublishersImpl;
-import com.pubsub.utils.PasswordHash;
-import com.pubsub.utils.PubSubConstants;
+import com.pubsub.configuration.impl.InitializeDefaultUser;
 
 public class MainMenu implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	private static Map<String, String> map = new HashMap<>();
-	private static PublishersImpl publishers = new PublishersImpl();
-	private static Map<String, List<String>> publishersList = new HashMap<>();
 
 	static {
-		/*try {
-			//publishersList = publishers.initializePublishersAndInterest();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}*/
+		InitializeDefaultUser.initializeUsers();
 	}
 
 	public static void main(String[] args)
