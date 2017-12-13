@@ -3,7 +3,7 @@ package com.pubsub.utils;
 public class PubSubConstants {
 
 	public static final String USER_FILE = "users.obj";
-	public static final String PUBLISHERS_FILE = "publishers.obj";
+	public static final String ARTICLE_FILE = "articles.obj";
 	
 	public static final String PBKDF2 = "PBKDF2WithHmacSHA1";
 	public static final String SHA1PRNG = "SHA1PRNG";
@@ -19,5 +19,6 @@ public class PubSubConstants {
 	public static final String TECH = "Technology";
 	public static final String ALIENS = "Aliens";
 	public static final String HUMANITIES = "Humaities";
+	
 	
 }

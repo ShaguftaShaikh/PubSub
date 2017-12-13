@@ -43,7 +43,6 @@ public class InitializeDefaultUser implements Serializable {
 					}
 					u.setUserInterest(list);
 					u.setSubscribedPublishers(null);
-
 					allUsers.add(u);
 				}
 				bufferedReader.close();

@@ -25,16 +25,17 @@ public class SignUp implements Serializable {
 
 	public void signup(Scanner sc)
 			throws NoSuchAlgorithmException, InvalidKeySpecException, ClassNotFoundException, IOException {
-		User user = new User();
-		Set<String> subscribedPublishers = new HashSet<>();
+
 		List<User> allUsers = User.readUser();
 		boolean flag = false;
+		String username = "";
 		System.out.println("Enter name: ");
-
-		sc.nextLine();
-		String username = sc.nextLine();
+		username = sc.nextLine();
 
 		if (allUsers != null) {
+			User user = new User();
+			Set<String> subscribedPublishers = new HashSet<>();
+
 			for (User users : allUsers) {
 				String name = users.getName();
 				if (name.equalsIgnoreCase(username)) {
@@ -42,8 +43,31 @@ public class SignUp implements Serializable {
 					break;
 				}
 			}
+
+			if (flag) {
+				System.out.println("User with name already exist choose another!");
+				signup(sc);
+			} else {
+
+				System.out.println("Enter password: ");
+				String password = sc.nextLine();
+				password = PasswordHash.generatePasswordHash(password);
+				user = chooseInterest(user, sc);
+
+				user.setName(username);
+				user.setPassword(password);
+				user.setPublisher(false);
+
+				subscribedPublishers = choosePublishers(user, allUsers, sc);
+				user.setSubscribedPublishers(subscribedPublishers);
+
+				allUsers.add(user);
+				User.writeUser(allUsers);
+			}
 		} else {
 			allUsers = new ArrayList<>();
+			User user = new User();
+			Set<String> subscribedPublishers = new HashSet<>();
 
 			System.out.println("Enter password: ");
 			String password = sc.nextLine();
@@ -56,27 +80,7 @@ public class SignUp implements Serializable {
 
 			subscribedPublishers = choosePublishers(user, allUsers, sc);
 			user.setSubscribedPublishers(subscribedPublishers);
-			System.out.println(user);
-			allUsers.add(user);
-			User.writeUser(allUsers);
-		}
 
-		if (flag) {
-			System.out.println("User with name already exist choose another!");
-			signup(sc);
-		} else {
-			System.out.println("Enter password: ");
-			String password = sc.nextLine();
-			password = PasswordHash.generatePasswordHash(password);
-			user = chooseInterest(user, sc);
-
-			user.setName(username);
-			user.setPassword(password);
-			user.setPublisher(false);
-
-			subscribedPublishers = choosePublishers(user, allUsers, sc);
-			user.setSubscribedPublishers(subscribedPublishers);
-			System.out.println(user);
 			allUsers.add(user);
 			User.writeUser(allUsers);
 		}
@@ -110,6 +114,7 @@ public class SignUp implements Serializable {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	private Set<String> choosePublishers(User user, List<User> allUsers, Scanner sc) {
 		System.out.println("1. Show publishers based on your interest");
 		System.out.println("2. Show all publishers");
@@ -119,8 +124,9 @@ public class SignUp implements Serializable {
 		Set<String> subscribedPublishers = new HashSet<>();
 		List<String> selectedPublisher = new ArrayList<>();
 		List<String> userInterest = user.getUserInterest();
-		if (choice == 1) {
-			
+
+		if (choice == 1 && (!userInterest.isEmpty())) {
+
 			if (userInterest != null) {
 				for (String interest : userInterest) {
 					if (allUsers != null) {
@@ -151,25 +157,32 @@ public class SignUp implements Serializable {
 					}
 				}
 			}
-		} else if (choice == 2) {
-			int i = 1;
-			for (User u : allUsers) {
-				if(u.isPublisher()){
-					System.out.println(i+". "+u.getName());
-					selectedPublisher.add(u.getName());
-					i++;
+		} else if (userInterest.isEmpty()) {
+			if (choice == 2 || choice == 1) {
+				while (true) {
+					int i = 1;
+					for (User u : allUsers) {
+						if (u.isPublisher()) {
+							System.out.println(i + ". " + u.getName());
+							selectedPublisher.add(u.getName());
+							i++;
+						}
+					}
+					System.out.println(i + ". Exit");
+					System.out.println("Choose publisher: ");
+					int c = sc.nextInt();
+					if (c > i || c <= 0) {
+						System.out.println("Inavlid Choice");
+					} else if (c == i) {
+						return subscribedPublishers;
+					} else {
+						subscribedPublishers.add(selectedPublisher.get(c - 1));
+					}
 				}
-			}
-			System.out.println(i+". Exit");
-			System.out.println("Choose publisher: ");
-			int c = sc.nextInt();
-			if(c>i || c<=0){
-				System.out.println("Inavlid Choice");
-			}else if(c==i){
-				return subscribedPublishers;
 			} else {
-				subscribedPublishers.add(selectedPublisher.get(c - 1));
+				return subscribedPublishers;
 			}
+
 		} else {
 			return subscribedPublishers;
 		}
