@@ -5,8 +5,11 @@ import java.io.Serializable;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Scanner;
+import java.util.Set;
 
 import com.pubsub.configuration.Category;
 import com.pubsub.configuration.impl.CategoryImpl;
@@ -20,32 +23,23 @@ public class SignUp implements Serializable {
 	 */
 	private static final long serialVersionUID = 2L;
 
-	public void signup() throws NoSuchAlgorithmException, InvalidKeySpecException, ClassNotFoundException, IOException {
+	public void signup(Scanner sc)
+			throws NoSuchAlgorithmException, InvalidKeySpecException, ClassNotFoundException, IOException {
 		User user = new User();
+		Set<String> subscribedPublishers = new HashSet<>();
 		List<User> allUsers = User.readUser();
-		Scanner sc = new Scanner(System.in);
 		boolean flag = false;
 		System.out.println("Enter name: ");
+
+		sc.nextLine();
 		String username = sc.nextLine();
 
 		if (allUsers != null) {
 			for (User users : allUsers) {
 				String name = users.getName();
-				if (!name.equalsIgnoreCase(username)) {
-					System.out.println("Enter password: ");
-					String password = sc.nextLine();
-					password = PasswordHash.generatePasswordHash(password);
-					user = chooseInterest(user);
-
-					user.setName(username);
-					user.setPassword(password);
-					user.setPublisher(false);
-
-					allUsers.add(user);
-					User.writeUser(allUsers);
-					break;
-				} else {
+				if (name.equalsIgnoreCase(username)) {
 					flag = true;
+					break;
 				}
 			}
 		} else {
@@ -55,62 +49,131 @@ public class SignUp implements Serializable {
 			String password = sc.nextLine();
 			password = PasswordHash.generatePasswordHash(password);
 
-			user = chooseInterest(user);
+			user = chooseInterest(user, sc);
 			user.setName(username);
 			user.setPassword(password);
 			user.setPublisher(false);
 
-			choosePublishers(user);
+			subscribedPublishers = choosePublishers(user, allUsers, sc);
+			user.setSubscribedPublishers(subscribedPublishers);
+			System.out.println(user);
 			allUsers.add(user);
 			User.writeUser(allUsers);
 		}
 
 		if (flag) {
-			System.out.println("Username already exist choose another!");
-			signup();
+			System.out.println("User with name already exist choose another!");
+			signup(sc);
+		} else {
+			System.out.println("Enter password: ");
+			String password = sc.nextLine();
+			password = PasswordHash.generatePasswordHash(password);
+			user = chooseInterest(user, sc);
+
+			user.setName(username);
+			user.setPassword(password);
+			user.setPublisher(false);
+
+			subscribedPublishers = choosePublishers(user, allUsers, sc);
+			user.setSubscribedPublishers(subscribedPublishers);
+			System.out.println(user);
+			allUsers.add(user);
+			User.writeUser(allUsers);
 		}
-		sc.close();
 	}
 
-	private User chooseInterest(User user)
+	private User chooseInterest(User user, Scanner sc)
 			throws NoSuchAlgorithmException, InvalidKeySpecException, ClassNotFoundException, IOException {
 		// TODO Auto-generated method stub
 		Category category = new CategoryImpl();
 		List<String> categories = category.getCategoryList();
 		List<String> userChoiceCategory = new ArrayList<String>();
-		Scanner sc = new Scanner(System.in);
 		int i;
 		while (true) {
 			for (i = 0; i < categories.size(); i++) {
 				System.out.println(i + 1 + ". " + categories.get(i));
 			}
 
-			System.out.println(i + 1 + ". EXIT");
+			System.out.println(i + 1 + ". Exit");
 
 			System.out.println("Choose your interest");
 			int choice = sc.nextInt();
 
-			if (choice > (i + 1)) {
+			if (choice > i + 1) {
 				System.out.println("Invalid Choice");
-			} else if (choice == (i + 1)) {
-				sc.close();
+			} else if (choice == i + 1) {
 				user.setUserInterest(userChoiceCategory);
 				return user;
 			} else {
-				System.out.println(categories.get(choice - 1));
 				userChoiceCategory.add(categories.get(choice - 1));
 			}
 		}
 	}
 
-	private void choosePublishers(User user) {
+	private Set<String> choosePublishers(User user, List<User> allUsers, Scanner sc) {
+		System.out.println("1. Show publishers based on your interest");
+		System.out.println("2. Show all publishers");
+		System.out.println("3. Exit");
+
+		int choice = sc.nextInt();
+		Set<String> subscribedPublishers = new HashSet<>();
+		List<String> selectedPublisher = new ArrayList<>();
 		List<String> userInterest = user.getUserInterest();
-		if (userInterest != null) {
-			for (String interest : userInterest) {
-
+		if (choice == 1) {
+			
+			if (userInterest != null) {
+				for (String interest : userInterest) {
+					if (allUsers != null) {
+						for (User u : allUsers) {
+							List<String> allUserInterests = u.getUserInterest();
+							if (allUserInterests.contains(interest)) {
+								selectedPublisher.add(u.getName());
+							}
+						}
+					}
+				}
+				while (true) {
+					Iterator<String> itr = selectedPublisher.iterator();
+					int i = 1;
+					while (itr.hasNext()) {
+						System.out.println(i + ". " + itr.next());
+						i++;
+					}
+					System.out.println(i + ". Exit");
+					System.out.println("Choose publisher: ");
+					int c = sc.nextInt();
+					if (c > i || c <= 0) {
+						System.out.println("Invalid Choice");
+					} else if (c == i) {
+						return subscribedPublishers;
+					} else {
+						subscribedPublishers.add(selectedPublisher.get(c - 1));
+					}
+				}
 			}
+		} else if (choice == 2) {
+			int i = 1;
+			for (User u : allUsers) {
+				if(u.isPublisher()){
+					System.out.println(i+". "+u.getName());
+					selectedPublisher.add(u.getName());
+					i++;
+				}
+			}
+			System.out.println(i+". Exit");
+			System.out.println("Choose publisher: ");
+			int c = sc.nextInt();
+			if(c>i || c<=0){
+				System.out.println("Inavlid Choice");
+			}else if(c==i){
+				return subscribedPublishers;
+			} else {
+				subscribedPublishers.add(selectedPublisher.get(c - 1));
+			}
+		} else {
+			return subscribedPublishers;
 		}
+		return subscribedPublishers;
 	}
-
 
 }

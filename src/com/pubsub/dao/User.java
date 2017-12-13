@@ -8,24 +8,24 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.List;
+import java.util.Set;
 
 import com.pubsub.utils.PubSubConstants;
 
-public class User implements Serializable{
+public class User implements Serializable {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
+
 	private String name;
 	private String password;
 	private List<String> userInterest;
 	private boolean isPublisher;
-	private List<String> subscribedPublishers;
-	//private Publisher publisher;
+	private Set<String> subscribedPublishers;
+	// private Publisher publisher;
 
-	
 	public boolean isPublisher() {
 		return isPublisher;
 	}
@@ -57,21 +57,21 @@ public class User implements Serializable{
 	public void setPassword(String password) {
 		this.password = password;
 	}
-	
-	public List<String> getSubscribedPublishers() {
+
+	public Set<String> getSubscribedPublishers() {
 		return subscribedPublishers;
 	}
 
-	public void setSubscribedPublishers(List<String> subscribedPublishers) {
+	public void setSubscribedPublishers(Set<String> subscribedPublishers) {
 		this.subscribedPublishers = subscribedPublishers;
 	}
 
 	@Override
 	public String toString() {
 		// TODO Auto-generated method stub
-		return name + " " + password + " " + userInterest+" "+subscribedPublishers;
+		return name + " " + password + " "+isPublisher+" " + userInterest + " " + subscribedPublishers;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public static List<User> readUser() {
 		// TODO Auto-generated method stub
@@ -83,15 +83,15 @@ public class User implements Serializable{
 			users = (List<User>) objectInputStream.readObject();
 			objectInputStream.close();
 		} catch (FileNotFoundException e) {
-			
+
 		} catch (ClassNotFoundException e) {
-			
+
 		} catch (IOException e) {
-			
+
 		}
 		return users;
 	}
-	
+
 	public static void writeUser(List<User> users) throws IOException {
 		// TODO Auto-generated method stub
 		FileOutputStream fileOutputStream = new FileOutputStream(PubSubConstants.USER_FILE);

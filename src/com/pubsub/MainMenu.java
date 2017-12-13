@@ -48,10 +48,10 @@ public class MainMenu implements Serializable {
 				break;
 			case 2:
 				try {
-					new SignUp().signup();
+					new SignUp().signup(sc);
 				} catch (NoSuchAlgorithmException | InvalidKeySpecException | ClassNotFoundException | IOException e) {
 					// TODO Auto-generated catch block
-					e.printStackTrace();
+					//e.printStackTrace();
 				}
 				break;
 			case 3:
