@@ -6,18 +6,35 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import com.pubsub.utils.PubSubConstants;
 
-public class Publisher {
+public class PublisherArticle implements Serializable{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6L;
+	
+	
 	private String article;
 	private User publishedBy;
 	private String articleCategory;
 	private int likes;
 	private Date publishingDate;
+	private String articleTitle;
+
+	public String getArticleTitle() {
+		return articleTitle;
+	}
+
+	public void setArticleTitle(String articleTitle) {
+		this.articleTitle = articleTitle;
+	}
 
 	public String getArticle() {
 		return article;
@@ -62,18 +79,18 @@ public class Publisher {
 	@Override
 	public String toString() {
 		// TODO Auto-generated method stub
-		return article + " " + publishedBy + " " + articleCategory + " " + likes + " " + publishingDate;
+		return articleTitle+" "+ article + " " + publishedBy + " " + articleCategory + " " + likes + " " + publishingDate;
 	}
 
 	@SuppressWarnings("unchecked")
-	public static List<Publisher> readArticles() {
+	public static List<PublisherArticle> readArticles() {
 		// TODO Auto-generated method stub
-		List<Publisher> publishers = null;
+		List<PublisherArticle> publishers = null;
 		FileInputStream fileInputStream;
 		try {
 			fileInputStream = new FileInputStream(PubSubConstants.ARTICLE_FILE);
 			ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
-			publishers = (List<Publisher>) objectInputStream.readObject();
+			publishers = (List<PublisherArticle>) objectInputStream.readObject();
 			objectInputStream.close();
 		} catch (FileNotFoundException e) {
 
@@ -85,7 +102,7 @@ public class Publisher {
 		return publishers;
 	}
 
-	public static void writeArticles(List<Publisher> publishers) throws IOException {
+	public static void writeArticles(List<PublisherArticle> publishers) throws IOException {
 		// TODO Auto-generated method stub
 		FileOutputStream fileOutputStream = new FileOutputStream(PubSubConstants.ARTICLE_FILE);
 		ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);

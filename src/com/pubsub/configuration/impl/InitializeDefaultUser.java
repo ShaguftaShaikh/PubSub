@@ -7,7 +7,9 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.pubsub.dao.User;
 
@@ -36,7 +38,7 @@ public class InitializeDefaultUser implements Serializable {
 					u.setPassword(str[1]);
 					u.setPublisher(true);
 
-					List<String> list = new ArrayList<>();
+					Set<String> list = new HashSet<>();
 
 					for (int i = 2; i < str.length; i++) {
 						list.add(str[i]);

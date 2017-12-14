@@ -6,6 +6,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Scanner;
 
+import com.pubsub.configuration.impl.InitializeDefaultPublisherArticles;
 import com.pubsub.configuration.impl.InitializeDefaultUser;
 
 public class MainMenu implements Serializable {
@@ -15,6 +16,7 @@ public class MainMenu implements Serializable {
 
 	static {
 		InitializeDefaultUser.initializeUsers();
+		InitializeDefaultPublisherArticles.initializeDefaultArticles();
 	}
 
 	public static void main(String[] args)

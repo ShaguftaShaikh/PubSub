@@ -21,7 +21,7 @@ public class User implements Serializable {
 
 	private String name;
 	private String password;
-	private List<String> userInterest;
+	private Set<String> userInterest;
 	private boolean isPublisher;
 	private Set<String> subscribedPublishers;
 	// private Publisher publisher;
@@ -34,11 +34,11 @@ public class User implements Serializable {
 		this.isPublisher = isPublisher;
 	}
 
-	public List<String> getUserInterest() {
+	public Set<String> getUserInterest() {
 		return userInterest;
 	}
 
-	public void setUserInterest(List<String> userInterest) {
+	public void setUserInterest(Set<String> userInterest) {
 		this.userInterest = userInterest;
 	}
 
@@ -98,5 +98,15 @@ public class User implements Serializable {
 		ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
 		objectOutputStream.writeObject(users);
 		objectOutputStream.close();
+	}
+	
+	public User getUserByName(String name){
+		List<User> users = readUser();
+		for(User user:users){
+			if(user.getName().equalsIgnoreCase(name)){
+				return user;
+			}
+		}
+		return null;
 	}
 }

@@ -26,7 +26,7 @@ public class Login {
 					try {
 						validate = PasswordHash.validatePassword(password, storedValue);
 						if (validate) {
-							landingMenu(sc);
+							landingMenu(sc,user);
 						} else {
 							System.out.println("Username or Password Incorrect!");
 						}
@@ -45,7 +45,7 @@ public class Login {
 		}
 	}
 
-	public void landingMenu(Scanner sc) {
+	public static void landingMenu(Scanner sc,User user) {
 		System.out.println("1. View Feed");
 		System.out.println("2. View/Edit Profile");
 		System.out.println("3. Become a Publisher");
@@ -57,6 +57,7 @@ public class Login {
 		int choice = sc.nextInt();
 		switch (choice) {
 		case 1:
+			ViewFeed.showFeeds(user,sc);
 			break;
 		case 2:
 			break;

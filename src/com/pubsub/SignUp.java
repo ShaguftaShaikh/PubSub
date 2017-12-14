@@ -16,6 +16,12 @@ import com.pubsub.configuration.impl.CategoryImpl;
 import com.pubsub.dao.User;
 import com.pubsub.utils.PasswordHash;
 
+/**
+ * @author Shagufta
+ * 
+ * This class is responsible for signup process of the user
+ *
+ */
 public class SignUp implements Serializable {
 
 	/**
@@ -23,6 +29,18 @@ public class SignUp implements Serializable {
 	 */
 	private static final long serialVersionUID = 2L;
 
+	/**
+	 * @param sc
+	 * @throws NoSuchAlgorithmException
+	 * @throws InvalidKeySpecException
+	 * @throws ClassNotFoundException
+	 * @throws IOException
+	 * 
+	 * This will first check for unique name of the user.
+	 * if the name is already been use it will show a message and ask user to reenter another name
+	 * If all goes well it will further proceeds to ask for interest and publisher and at the end
+	 * It will add that user into user list and save the object into user.obj file
+	 */
 	public void signup(Scanner sc)
 			throws NoSuchAlgorithmException, InvalidKeySpecException, ClassNotFoundException, IOException {
 
@@ -36,6 +54,7 @@ public class SignUp implements Serializable {
 			User user = new User();
 			Set<String> subscribedPublishers = new HashSet<>();
 
+			//check if username already been in use
 			for (User users : allUsers) {
 				String name = users.getName();
 				if (name.equalsIgnoreCase(username)) {
@@ -44,11 +63,13 @@ public class SignUp implements Serializable {
 				}
 			}
 
+			//username already in use
 			if (flag) {
 				System.out.println("User with name already exist choose another!");
 				signup(sc);
+				
 			} else {
-
+				//username is unique proceed
 				System.out.println("Enter password: ");
 				String password = sc.nextLine();
 				password = PasswordHash.generatePasswordHash(password);
@@ -58,11 +79,14 @@ public class SignUp implements Serializable {
 				user.setPassword(password);
 				user.setPublisher(false);
 
+				//ask user to subscribe publisher
 				subscribedPublishers = choosePublishers(user, allUsers, sc);
 				user.setSubscribedPublishers(subscribedPublishers);
 
 				allUsers.add(user);
 				User.writeUser(allUsers);
+				
+				Login.landingMenu(sc,user);
 			}
 		} else {
 			allUsers = new ArrayList<>();
@@ -82,7 +106,11 @@ public class SignUp implements Serializable {
 			user.setSubscribedPublishers(subscribedPublishers);
 
 			allUsers.add(user);
+			
+			//write all user to users.obj file
 			User.writeUser(allUsers);
+			
+			Login.landingMenu(sc,user);
 		}
 	}
 
@@ -91,7 +119,7 @@ public class SignUp implements Serializable {
 		// TODO Auto-generated method stub
 		Category category = new CategoryImpl();
 		List<String> categories = category.getCategoryList();
-		List<String> userChoiceCategory = new ArrayList<String>();
+		Set<String> userChoiceCategory = new HashSet<>();
 		int i;
 		while (true) {
 			for (i = 0; i < categories.size(); i++) {
@@ -123,7 +151,7 @@ public class SignUp implements Serializable {
 		int choice = sc.nextInt();
 		Set<String> subscribedPublishers = new HashSet<>();
 		List<String> selectedPublisher = new ArrayList<>();
-		List<String> userInterest = user.getUserInterest();
+		Set<String> userInterest = user.getUserInterest();
 
 		if (choice == 1 && (!userInterest.isEmpty())) {
 
@@ -131,7 +159,7 @@ public class SignUp implements Serializable {
 				for (String interest : userInterest) {
 					if (allUsers != null) {
 						for (User u : allUsers) {
-							List<String> allUserInterests = u.getUserInterest();
+							Set<String> allUserInterests = u.getUserInterest();
 							if (allUserInterests.contains(interest)) {
 								selectedPublisher.add(u.getName());
 							}
