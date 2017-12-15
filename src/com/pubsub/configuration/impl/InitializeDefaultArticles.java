@@ -15,12 +15,13 @@ import java.util.List;
 import com.pubsub.dao.PublisherArticle;
 import com.pubsub.dao.User;
 
-public class InitializeDefaultPublisherArticles implements Serializable {
+public class InitializeDefaultArticles implements Serializable {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 5L;
+	
 
 	public static void initializeDefaultArticles() {
 		List<PublisherArticle> articles = PublisherArticle.readArticles();

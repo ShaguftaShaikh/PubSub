@@ -6,9 +6,9 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import com.pubsub.dao.User;
@@ -21,10 +21,10 @@ public class InitializeDefaultUser implements Serializable {
 	private static final long serialVersionUID = 4L;
 
 	public static void initializeUsers() {
-		List<User> allUsers = User.readUser();
-
+		Map<String, User> allUsers = User.readUser();
+		
 		if (allUsers == null) {
-			allUsers = new ArrayList<>();
+			allUsers = new HashMap<>();
 			try {
 				FileReader fileReader = new FileReader(new File("resources/users.txt"));
 				BufferedReader bufferedReader = new BufferedReader(fileReader);
@@ -32,7 +32,7 @@ public class InitializeDefaultUser implements Serializable {
 				String line = "";
 				while ((line = bufferedReader.readLine()) != null) {
 					String[] str = line.split(",");
-
+					
 					User u = new User();
 					u.setName(str[0]);
 					u.setPassword(str[1]);
@@ -45,10 +45,10 @@ public class InitializeDefaultUser implements Serializable {
 					}
 					u.setUserInterest(list);
 					u.setSubscribedPublishers(null);
-					allUsers.add(u);
+
+					allUsers.put(u.getName(), u);
 				}
 				bufferedReader.close();
-				
 				User.writeUser(allUsers);
 			} catch (FileNotFoundException e) {
 				// TODO Auto-generated catch block
@@ -56,7 +56,7 @@ public class InitializeDefaultUser implements Serializable {
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			} 
-		} 
+			}
+		}
 	}
 }

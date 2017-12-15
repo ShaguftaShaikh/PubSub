@@ -2,8 +2,8 @@ package com.pubsub;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 
 import com.pubsub.dao.User;
@@ -11,41 +11,35 @@ import com.pubsub.utils.PasswordHash;
 
 public class Login {
 
-	private static List<User> allUsers = new ArrayList<>();
+	private static Map<String, User> allUsers = new HashMap<>();
 
 	public void login(String username, String password, Scanner sc) {
 		// TODO Auto-generated method stub
 		allUsers = User.readUser();
-		boolean validate = false, userExist = false;
-		;
+		boolean validate = false;
 
 		if (allUsers != null) {
-			for (User user : allUsers) {
-				if (user.getName().equals(username)) {
-					String storedValue = user.getPassword();
-					try {
-						validate = PasswordHash.validatePassword(password, storedValue);
-						if (validate) {
-							landingMenu(sc,user);
-						} else {
-							System.out.println("Username or Password Incorrect!");
-						}
-					} catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
-						// TODO Auto-generated catch block
-
+			if (allUsers.containsKey(username)) {
+				User user = allUsers.get(username);
+				String storedValue = user.getPassword();
+				try {
+					validate = PasswordHash.validatePassword(password, storedValue);
+					if (validate) {
+						landingMenu(sc, user);
+					} else {
+						System.out.println("Username or Password Incorrect!");
 					}
-					userExist = true;
-					break;
+				} catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+					// TODO Auto-generated catch block
+					System.out.println("Exception here");
 				}
 			}
-			if (!userExist)
-				System.out.println("Username or Password Incorrect!");
 		} else {
 			System.out.println("Username or Password Incorrect!");
 		}
 	}
 
-	public static void landingMenu(Scanner sc,User user) {
+	public static void landingMenu(Scanner sc, User user) {
 		System.out.println("1. View Feed");
 		System.out.println("2. View/Edit Profile");
 		System.out.println("3. Become a Publisher");
@@ -57,7 +51,7 @@ public class Login {
 		int choice = sc.nextInt();
 		switch (choice) {
 		case 1:
-			ViewFeed.showFeeds(user,sc);
+			ViewFeed.showFeeds(user, sc);
 			break;
 		case 2:
 			break;

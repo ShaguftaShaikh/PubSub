@@ -8,6 +8,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import com.pubsub.utils.PubSubConstants;
@@ -23,8 +24,16 @@ public class User implements Serializable {
 	private String password;
 	private Set<String> userInterest;
 	private boolean isPublisher;
-	private Set<String> subscribedPublishers;
-	// private Publisher publisher;
+	private Set<User> subscribedPublishers;
+	private List<PublisherArticle> publishedArticles;
+
+	public List<PublisherArticle> getPublishedArticles() {
+		return publishedArticles;
+	}
+
+	public void setPublishedArticles(List<PublisherArticle> publishedArticles) {
+		this.publishedArticles = publishedArticles;
+	}
 
 	public boolean isPublisher() {
 		return isPublisher;
@@ -58,11 +67,11 @@ public class User implements Serializable {
 		this.password = password;
 	}
 
-	public Set<String> getSubscribedPublishers() {
+	public Set<User> getSubscribedPublishers() {
 		return subscribedPublishers;
 	}
 
-	public void setSubscribedPublishers(Set<String> subscribedPublishers) {
+	public void setSubscribedPublishers(Set<User> subscribedPublishers) {
 		this.subscribedPublishers = subscribedPublishers;
 	}
 
@@ -73,14 +82,14 @@ public class User implements Serializable {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static List<User> readUser() {
+	public static Map<String,User> readUser() {
 		// TODO Auto-generated method stub
-		List<User> users = null;
+		Map<String,User> users = null;
 		FileInputStream fileInputStream;
 		try {
 			fileInputStream = new FileInputStream(PubSubConstants.USER_FILE);
 			ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
-			users = (List<User>) objectInputStream.readObject();
+			users = (Map<String,User>) objectInputStream.readObject();
 			objectInputStream.close();
 		} catch (FileNotFoundException e) {
 
@@ -92,7 +101,7 @@ public class User implements Serializable {
 		return users;
 	}
 
-	public static void writeUser(List<User> users) throws IOException {
+	public static void writeUser(Map<String,User> users) throws IOException {
 		// TODO Auto-generated method stub
 		FileOutputStream fileOutputStream = new FileOutputStream(PubSubConstants.USER_FILE);
 		ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
@@ -101,12 +110,7 @@ public class User implements Serializable {
 	}
 	
 	public User getUserByName(String name){
-		List<User> users = readUser();
-		for(User user:users){
-			if(user.getName().equalsIgnoreCase(name)){
-				return user;
-			}
-		}
-		return null;
+		Map<String,User> allUsers = readUser();
+		return allUsers.get(name);
 	}
 }
