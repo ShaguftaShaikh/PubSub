@@ -15,9 +15,9 @@ public class Login {
 
 	public void login(String username, String password, Scanner sc) {
 		// TODO Auto-generated method stub
-		allUsers = User.readPublisher();
+		allUsers = User.readAllUser();
 		boolean validate = false;
-
+		
 		if (allUsers != null) {
 			if (allUsers.containsKey(username)) {
 				User user = allUsers.get(username);

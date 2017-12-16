@@ -91,14 +91,14 @@ public class User implements Serializable {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static Map<String,User> readPublisher() {
+	public static Map<String, User> readPublisher() {
 		// TODO Auto-generated method stub
-		Map<String,User> users = null;
+		Map<String, User> users = null;
 		FileInputStream fileInputStream;
 		try {
 			fileInputStream = new FileInputStream(PubSubConstants.PUBLISHERS_FILE);
 			ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
-			users = (Map<String,User>) objectInputStream.readObject();
+			users = (Map<String, User>) objectInputStream.readObject();
 			objectInputStream.close();
 		} catch (FileNotFoundException e) {
 
@@ -110,23 +110,23 @@ public class User implements Serializable {
 		return users;
 	}
 
-	public static void writePublisher(Map<String,User> users) throws IOException {
+	public static void writePublisher(Map<String, User> users) throws IOException {
 		// TODO Auto-generated method stub
 		FileOutputStream fileOutputStream = new FileOutputStream(PubSubConstants.PUBLISHERS_FILE);
 		ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
 		objectOutputStream.writeObject(users);
 		objectOutputStream.close();
 	}
-	
+
 	@SuppressWarnings("unchecked")
-	public static Map<String,User> readUser() {
+	public static Map<String, User> readUser() {
 		// TODO Auto-generated method stub
-		Map<String,User> users = null;
+		Map<String, User> users = null;
 		FileInputStream fileInputStream;
 		try {
 			fileInputStream = new FileInputStream(PubSubConstants.USER_FILE);
 			ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
-			users = (Map<String,User>) objectInputStream.readObject();
+			users = (Map<String, User>) objectInputStream.readObject();
 			objectInputStream.close();
 		} catch (FileNotFoundException e) {
 
@@ -137,17 +137,41 @@ public class User implements Serializable {
 		}
 		return users;
 	}
-	
-	public static void writeUser(Map<String,User> users) throws IOException {
+
+	public static void writeUser(Map<String, User> users) throws IOException {
 		// TODO Auto-generated method stub
 		FileOutputStream fileOutputStream = new FileOutputStream(PubSubConstants.USER_FILE);
 		ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
 		objectOutputStream.writeObject(users);
 		objectOutputStream.close();
 	}
-	
-	public static User getUserByName(String name){
-		Map<String,User> allUsers = readPublisher();
+
+	@SuppressWarnings("unchecked")
+	public static Map<String, User> readAllUser() {
+		Map<String, User> users = null;
+		FileInputStream fileInputStream;
+		try {
+			fileInputStream = new FileInputStream(PubSubConstants.USER_FILE);
+			ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
+			users = (Map<String, User>) objectInputStream.readObject();
+			objectInputStream.close();
+
+			fileInputStream = new FileInputStream(PubSubConstants.PUBLISHERS_FILE);
+			objectInputStream = new ObjectInputStream(fileInputStream);
+			users.putAll((Map<String, User>) objectInputStream.readObject());
+			objectInputStream.close();
+		} catch (FileNotFoundException e) {
+
+		} catch (ClassNotFoundException e) {
+
+		} catch (IOException e) {
+
+		}
+		return users;
+	}
+
+	public static User getUserByName(String name) {
+		Map<String, User> allUsers = readPublisher();
 		return allUsers.get(name);
 	}
 }

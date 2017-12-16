@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Scanner;
 import java.util.Set;
 
@@ -48,7 +49,9 @@ public class SignUp implements Serializable {
 	public void signup(Scanner sc)
 			throws NoSuchAlgorithmException, InvalidKeySpecException, ClassNotFoundException, IOException {
 
-		Map<String, User> allUsers = User.readPublisher();
+		Map<String, User> allUsers = User.readAllUser();
+		Map<String, User> publishers = User.readPublisher();
+
 		String username = "";
 		System.out.println("Enter name: ");
 		username = sc.nextLine();
@@ -74,11 +77,12 @@ public class SignUp implements Serializable {
 				user.setPublisher(false);
 
 				// ask user to subscribe publisher
-				subscribedPublishers = choosePublishers(user, allUsers, sc);
+				subscribedPublishers = choosePublishers(user, publishers, sc);
+				System.out.println(subscribedPublishers);
 				user.setSubscribedPublishers(subscribedPublishers);
 
 				allUsers.put(user.getName(), user);
-				User.writePublisher(allUsers);
+				User.writeUser(allUsers);
 
 				Login.landingMenu(sc, user);
 			}
@@ -96,13 +100,13 @@ public class SignUp implements Serializable {
 			user.setPassword(password);
 			user.setPublisher(false);
 
-			subscribedPublishers = choosePublishers(user, allUsers, sc);
+			subscribedPublishers = choosePublishers(user, publishers, sc);
 			user.setSubscribedPublishers(subscribedPublishers);
 
 			allUsers.put(user.getName(), user);
 
 			// write all user to users.obj file
-			User.writePublisher(allUsers);
+			User.writeUser(allUsers);
 
 			Login.landingMenu(sc, user);
 		}
@@ -137,7 +141,7 @@ public class SignUp implements Serializable {
 	}
 
 	@SuppressWarnings("unused")
-	private Set<User> choosePublishers(User user, Map<String, User> allUsers, Scanner sc) {
+	private Set<User> choosePublishers(User user, Map<String, User> publishers, Scanner sc) {
 		System.out.println("1. Show publishers based on your interest");
 		System.out.println("2. Show all publishers");
 		System.out.println("3. Exit");
@@ -151,13 +155,15 @@ public class SignUp implements Serializable {
 
 			if (userInterest != null) {
 				for (String interest : userInterest) {
-					if (allUsers != null) {
-						for (Map.Entry<String, User> entry : allUsers.entrySet()) {
-							User u = entry.getValue();
-							Set<String> allUserInterests = u.getUserInterest();
-							if (allUserInterests.contains(interest)) {
-								if (u.isPublisher()) {
-									selectedPublisher.add(u);
+					if (publishers != null) {
+						for (Map.Entry<String, User> entry : publishers.entrySet()) {
+							User publisher = entry.getValue();
+							if (publisher != null) {
+								Set<String> allUserInterests = publisher.getUserInterest();
+								if (allUserInterests.contains(interest)) {
+									if (publisher.isPublisher()) {
+										selectedPublisher.add(publisher);
+									}
 								}
 							}
 						}
@@ -176,27 +182,22 @@ public class SignUp implements Serializable {
 					if (c > i || c <= 0) {
 						System.out.println("Invalid Choice");
 					} else if (c == i) {
-						return choosePublishers(user, allUsers, sc);
+						return choosePublishers(user, publishers, sc);
 					} else {
 						subscribedPublishers.add(selectedPublisher.get(c - 1));
 					}
 				}
 			}
 		} else if (choice == 2 || (choice == 1 && userInterest.isEmpty())) {
-
-			for (Map.Entry<String, User> entry : allUsers.entrySet()) {
-				User u = entry.getValue();
-				if (u.isPublisher()) {
-					selectedPublisher.add(u);
-				}
-			}
-
+			selectedPublisher.addAll(publishers.values());
 			while (true) {
-				Iterator<User> itr = selectedPublisher.iterator();
 				int i = 1;
-				while (itr.hasNext()) {
-					System.out.println(i + ". " + itr.next().getName());
-					i++;
+				for (Entry<String, User> entry : publishers.entrySet()) {
+					User u = entry.getValue();
+					if (u != null) {
+						System.out.println(i + ". " + u.getName());
+						i++;
+					}
 				}
 				System.out.println(i + ". Exit");
 				System.out.println("Choose publisher: ");
@@ -204,7 +205,7 @@ public class SignUp implements Serializable {
 				if (c > i || c <= 0) {
 					System.out.println("Invalid Choice");
 				} else if (c == i) {
-					return choosePublishers(user, allUsers, sc);
+					return choosePublishers(user, publishers, sc);
 				} else {
 					subscribedPublishers.add(selectedPublisher.get(c - 1));
 				}

@@ -11,9 +11,12 @@ public class Profile {
 	public static void userProfileMenu(User user, Scanner sc) {
 		System.out.println("Name: " + user.getName());
 		System.out.println();
-		try {
-			System.out.println("Number of Articles Published: " + user.getPublishedArticles().size());
-		} catch (NullPointerException e) {
+
+		if (user.isPublisher()) {
+			if (user.getPublishedArticles() != null) {
+				System.out.println("Number of Articles Published: " + user.getPublishedArticles().size());
+			}
+		} else {
 			System.out.println("Number of Articles Published: 0");
 		}
 		System.out.println();
@@ -27,16 +30,36 @@ public class Profile {
 		} else {
 			System.out.println("No interested category found");
 		}
-		Set<User> users = user.getSubscribedPublishers();
+
 		System.out.println();
 		System.out.println("Subscribed Publishers: ");
-		if (users.size() > 0) {
-			Iterator<User> itr = users.iterator();
-			while (itr.hasNext()) {
-				System.out.println(itr.next().getName());
+
+		Set<User> users = user.getSubscribedPublishers();
+		if (users != null) {
+			if (users.size() > 0) {
+				Iterator<User> itr = users.iterator();
+				while (itr.hasNext()) {
+					System.out.println(itr.next().getName());
+				}
+			} else {
+				System.out.println("No subscribed publishers found");
 			}
 		} else {
 			System.out.println("No subscribed publishers found");
 		}
+		System.out.println();
+
+		System.out.println("Followers: ");
+		Set<User> followers = user.getFollowers();
+		if (followers != null) {
+			Iterator<User> itr = followers.iterator();
+			while (itr.hasNext()) {
+				System.out.println(itr.next().getName());
+			}
+		} else {
+			System.out.println("No followers found");
+		}
+
+		System.out.println();
 	}
 }

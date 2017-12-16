@@ -47,8 +47,7 @@ public class InitializeAppImpl implements InitializeApp {
 					p.setArticleTitle(str[4]);
 					p.setArticle(str[5]);
 
-					User user = new User();
-					user = user.getUserByName(publishedBy);
+					User user = User.getUserByName(publishedBy);
 					p.setPublishedBy(user);
 
 					articles.add(p);
@@ -116,23 +115,28 @@ public class InitializeAppImpl implements InitializeApp {
 		List<PublisherArticle> articles = PublisherArticle.readArticles();
 		Map<String, User> allUsers = User.readPublisher();
 
-		for (Map.Entry<String, User> entry : allUsers.entrySet()) {
-			User entryUser = entry.getValue();
-			List<PublisherArticle> publishedArticles = new ArrayList<>();
+		if (!allUsers.containsKey("initializedArticles")) {
 
-			for (PublisherArticle article : articles) {
-				User user = article.getPublishedBy();
-				if (entryUser.getName().equalsIgnoreCase(user.getName())) {
-					publishedArticles.add(article);
+			for (Map.Entry<String, User> entry : allUsers.entrySet()) {
+				User entryUser = entry.getValue();
+				List<PublisherArticle> publishedArticles = new ArrayList<>();
+
+				for (PublisherArticle article : articles) {
+					User user = article.getPublishedBy();
+					if (entryUser.getName().equalsIgnoreCase(user.getName())) {
+						publishedArticles.add(article);
+					}
 				}
+				entryUser.setPublishedArticles(publishedArticles);
+				entry.setValue(entryUser);
 			}
-			entry.setValue(entryUser);
-		}
-		try {
-			User.writePublisher(allUsers);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			allUsers.put("initializedArticles", null);
+			try {
+				User.writePublisher(allUsers);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -194,31 +198,42 @@ public class InitializeAppImpl implements InitializeApp {
 		// TODO Auto-generated method stub
 		Map<String, User> publishers = User.readPublisher();
 		Map<String, User> users = User.readUser();
-		
-		for (Map.Entry<String, User> entry : users.entrySet()) {
-			User user = entry.getValue();
-			Set<User> subscribedPublishers = user.getSubscribedPublishers();
 
-			Iterator<User> itr = subscribedPublishers.iterator();
-			while (itr.hasNext()) {
-				User u = itr.next();
-				User publisher = publishers.get(u.getName());
-				Set<User> publisherFollowers = publisher.getFollowers();
-				if(publisherFollowers==null){
-					publisherFollowers = new HashSet<>();
-					publisherFollowers.add(user);
-				} else {
-					publisherFollowers.add(user);
+		if (!publishers.containsKey("initiallizedFollowers")) {
+
+			for (Map.Entry<String, User> entry : users.entrySet()) {
+				User user = entry.getValue();
+				Set<User> subscribedPublishers = user.getSubscribedPublishers();
+
+				Iterator<User> itr = subscribedPublishers.iterator();
+				while (itr.hasNext()) {
+					User u = itr.next();
+					User publisher = publishers.get(u.getName());
+					Set<User> publisherFollowers = publisher.getFollowers();
+					if (publisherFollowers == null) {
+						publisherFollowers = new HashSet<>();
+						publisherFollowers.add(user);
+					} else {
+						publisherFollowers.add(user);
+					}
+					publisher.setFollowers(publisherFollowers);
+					publishers.put(publisher.getName(), publisher);
 				}
-				publisher.setFollowers(publisherFollowers);
-				publishers.put(publisher.getName(), publisher);
 			}
-		}
-		try {
-			User.writePublisher(publishers);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			publishers.put("initiallizedFollowers", null);
+			/*
+			 * for (Entry<String, User> e : publishers.entrySet()) { User u
+			 * =e.getValue(); System.out.println(u.getName());
+			 * System.out.println(u.getFollowers());
+			 * System.out.println(u.getUserInterest());
+			 * System.out.println(u.getPublishedArticles());
+			 * System.out.println(); }
+			 */
+			try {
+				User.writePublisher(publishers);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+			}
 		}
 	}
 }
