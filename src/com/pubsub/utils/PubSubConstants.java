@@ -3,6 +3,7 @@ package com.pubsub.utils;
 public class PubSubConstants {
 
 	public static final String USER_FILE = "users.obj";
+	public static final String PUBLISHERS_FILE = "publisher.obj";
 	public static final String ARTICLE_FILE = "articles.obj";
 	
 	public static final String PBKDF2 = "PBKDF2WithHmacSHA1";

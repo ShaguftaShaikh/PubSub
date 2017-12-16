@@ -15,9 +15,25 @@ public class ViewFeed {
 		Set<String> userIntereset = user.getUserInterest();
 		Set<User> subscribedPublisher = user.getSubscribedPublishers();
 
+		List<PublisherArticle> allArticles = PublisherArticle.readArticles();
+
 		if ((userIntereset == null || userIntereset.isEmpty())
 				&& (subscribedPublisher == null || subscribedPublisher.isEmpty())) {
+			int i = 1;
+			for (PublisherArticle article : allArticles) {
+				System.out.println(i + ". " + article.getArticleTitle() + " - " + article.getArticleCategory());
+				i++;
+			}
+			System.out.println(i + ". Exit");
+			System.out.println("Choose Article to read: ");
+			int choice = sc.nextInt();
+			if (choice > i || choice < 1) {
+				System.out.println("Invalid Choice!");
+			} else if (choice == i) {
 
+			} else {
+				new Editor(allArticles.get(choice - 1).getArticle());
+			}
 		} else {
 			List<PublisherArticle> articlesMapping = new ArrayList<>();
 
@@ -25,7 +41,6 @@ public class ViewFeed {
 				Iterator<String> itr = userIntereset.iterator();
 				while (itr.hasNext()) {
 					String interest = itr.next();
-					List<PublisherArticle> allArticles = PublisherArticle.readArticles();
 					for (PublisherArticle article : allArticles) {
 						if (article.getArticleCategory().equalsIgnoreCase(interest)) {
 							articlesMapping.add(article);
@@ -37,7 +52,6 @@ public class ViewFeed {
 				Iterator<User> itr = subscribedPublisher.iterator();
 				while (itr.hasNext()) {
 					String publisher = itr.next().getName();
-					List<PublisherArticle> allArticles = PublisherArticle.readArticles();
 					for (PublisherArticle article : allArticles) {
 						User u = article.getPublishedBy();
 						if (u.getName().equalsIgnoreCase(publisher)) {

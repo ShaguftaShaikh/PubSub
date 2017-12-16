@@ -48,7 +48,7 @@ public class SignUp implements Serializable {
 	public void signup(Scanner sc)
 			throws NoSuchAlgorithmException, InvalidKeySpecException, ClassNotFoundException, IOException {
 
-		Map<String, User> allUsers = User.readUser();
+		Map<String, User> allUsers = User.readPublisher();
 		String username = "";
 		System.out.println("Enter name: ");
 		username = sc.nextLine();
@@ -78,7 +78,7 @@ public class SignUp implements Serializable {
 				user.setSubscribedPublishers(subscribedPublishers);
 
 				allUsers.put(user.getName(), user);
-				User.writeUser(allUsers);
+				User.writePublisher(allUsers);
 
 				Login.landingMenu(sc, user);
 			}
@@ -102,7 +102,7 @@ public class SignUp implements Serializable {
 			allUsers.put(user.getName(), user);
 
 			// write all user to users.obj file
-			User.writeUser(allUsers);
+			User.writePublisher(allUsers);
 
 			Login.landingMenu(sc, user);
 		}

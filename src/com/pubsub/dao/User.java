@@ -26,6 +26,15 @@ public class User implements Serializable {
 	private boolean isPublisher;
 	private Set<User> subscribedPublishers;
 	private List<PublisherArticle> publishedArticles;
+	private Set<User> followers;
+
+	public Set<User> getFollowers() {
+		return followers;
+	}
+
+	public void setFollowers(Set<User> followers) {
+		this.followers = followers;
+	}
 
 	public List<PublisherArticle> getPublishedArticles() {
 		return publishedArticles;
@@ -78,9 +87,37 @@ public class User implements Serializable {
 	@Override
 	public String toString() {
 		// TODO Auto-generated method stub
-		return name + " " + password + " "+isPublisher+" " + userInterest + " " + subscribedPublishers;
+		return name;
 	}
 
+	@SuppressWarnings("unchecked")
+	public static Map<String,User> readPublisher() {
+		// TODO Auto-generated method stub
+		Map<String,User> users = null;
+		FileInputStream fileInputStream;
+		try {
+			fileInputStream = new FileInputStream(PubSubConstants.PUBLISHERS_FILE);
+			ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
+			users = (Map<String,User>) objectInputStream.readObject();
+			objectInputStream.close();
+		} catch (FileNotFoundException e) {
+
+		} catch (ClassNotFoundException e) {
+
+		} catch (IOException e) {
+
+		}
+		return users;
+	}
+
+	public static void writePublisher(Map<String,User> users) throws IOException {
+		// TODO Auto-generated method stub
+		FileOutputStream fileOutputStream = new FileOutputStream(PubSubConstants.PUBLISHERS_FILE);
+		ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+		objectOutputStream.writeObject(users);
+		objectOutputStream.close();
+	}
+	
 	@SuppressWarnings("unchecked")
 	public static Map<String,User> readUser() {
 		// TODO Auto-generated method stub
@@ -100,7 +137,7 @@ public class User implements Serializable {
 		}
 		return users;
 	}
-
+	
 	public static void writeUser(Map<String,User> users) throws IOException {
 		// TODO Auto-generated method stub
 		FileOutputStream fileOutputStream = new FileOutputStream(PubSubConstants.USER_FILE);
@@ -109,8 +146,8 @@ public class User implements Serializable {
 		objectOutputStream.close();
 	}
 	
-	public User getUserByName(String name){
-		Map<String,User> allUsers = readUser();
+	public static User getUserByName(String name){
+		Map<String,User> allUsers = readPublisher();
 		return allUsers.get(name);
 	}
 }

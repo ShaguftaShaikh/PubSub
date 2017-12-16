@@ -18,6 +18,8 @@ public class MainMenu implements Serializable {
 		impl.initializeUsers();
 		impl.initializeDefaultArticles();
 		impl.initializePublisherToArticles();
+		impl.initializeApplicationUser();
+		impl.initializeFollowersToPublishers();
 	}
 
 	public static void main(String[] args)

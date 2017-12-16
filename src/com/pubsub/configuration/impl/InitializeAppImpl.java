@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -70,7 +71,7 @@ public class InitializeAppImpl implements InitializeApp {
 	@Override
 	public void initializeUsers() {
 		// TODO Auto-generated method stub
-		Map<String, User> allUsers = User.readUser();
+		Map<String, User> allUsers = User.readPublisher();
 
 		if (allUsers == null) {
 			allUsers = new HashMap<>();
@@ -98,7 +99,7 @@ public class InitializeAppImpl implements InitializeApp {
 					allUsers.put(u.getName(), u);
 				}
 				bufferedReader.close();
-				User.writeUser(allUsers);
+				User.writePublisher(allUsers);
 			} catch (FileNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -113,7 +114,7 @@ public class InitializeAppImpl implements InitializeApp {
 	public void initializePublisherToArticles() {
 		// TODO Auto-generated method stub
 		List<PublisherArticle> articles = PublisherArticle.readArticles();
-		Map<String, User> allUsers = User.readUser();
+		Map<String, User> allUsers = User.readPublisher();
 
 		for (Map.Entry<String, User> entry : allUsers.entrySet()) {
 			User entryUser = entry.getValue();
@@ -128,11 +129,96 @@ public class InitializeAppImpl implements InitializeApp {
 			entry.setValue(entryUser);
 		}
 		try {
-			User.writeUser(allUsers);
+			User.writePublisher(allUsers);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 
+	public void initializeApplicationUser() {
+		Map<String, User> allUsers = User.readUser();
+		if (allUsers == null) {
+			allUsers = new HashMap<>();
+			try {
+				FileReader fileReader = new FileReader(new File("resources/normalUsers.txt"));
+				BufferedReader bufferedReader = new BufferedReader(fileReader);
+
+				String line = "";
+				while ((line = bufferedReader.readLine()) != null) {
+					String[] str = line.split("\\|");
+
+					User u = new User();
+					u.setName(str[0]);
+					u.setPassword(str[1]);
+					u.setPublisher(false);
+
+					Set<String> list = new HashSet<>();
+					try {
+						String[] interest = str[2].split(",");
+						for (int i = 0; i < interest.length; i++) {
+							list.add(interest[i]);
+						}
+					} catch (Exception e) {
+
+					}
+					u.setUserInterest(list);
+					Set<User> subscribedPublisher = new HashSet<>();
+
+					if (str.length > 3) {
+						if (str[3] != null) {
+							String[] publisher = str[3].split(",");
+							for (int i = 0; i < publisher.length; i++) {
+								User user = User.getUserByName(publisher[i]);
+								subscribedPublisher.add(user);
+							}
+						}
+					}
+					u.setSubscribedPublishers(subscribedPublisher);
+					allUsers.put(u.getName(), u);
+				}
+				bufferedReader.close();
+				User.writeUser(allUsers);
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+
+	@Override
+	public void initializeFollowersToPublishers() {
+		// TODO Auto-generated method stub
+		Map<String, User> publishers = User.readPublisher();
+		Map<String, User> users = User.readUser();
+		
+		for (Map.Entry<String, User> entry : users.entrySet()) {
+			User user = entry.getValue();
+			Set<User> subscribedPublishers = user.getSubscribedPublishers();
+
+			Iterator<User> itr = subscribedPublishers.iterator();
+			while (itr.hasNext()) {
+				User u = itr.next();
+				User publisher = publishers.get(u.getName());
+				Set<User> publisherFollowers = publisher.getFollowers();
+				if(publisherFollowers==null){
+					publisherFollowers = new HashSet<>();
+					publisherFollowers.add(user);
+				} else {
+					publisherFollowers.add(user);
+				}
+				publisher.setFollowers(publisherFollowers);
+				publishers.put(publisher.getName(), publisher);
+			}
+		}
+		try {
+			User.writePublisher(publishers);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 }

@@ -15,7 +15,7 @@ public class Login {
 
 	public void login(String username, String password, Scanner sc) {
 		// TODO Auto-generated method stub
-		allUsers = User.readUser();
+		allUsers = User.readPublisher();
 		boolean validate = false;
 
 		if (allUsers != null) {
@@ -40,34 +40,38 @@ public class Login {
 	}
 
 	public static void landingMenu(Scanner sc, User user) {
-		System.out.println("1. View Feed");
-		System.out.println("2. View/Edit Profile");
-		System.out.println("3. Become a Publisher");
-		System.out.println("4. Find Publishers");
-		System.out.println("5. Top 10 List");
-		System.out.println("6. Suggetions");
-		System.out.println("7. Logout");
-		System.out.println("Enter your choice: ");
-		int choice = sc.nextInt();
-		switch (choice) {
-		case 1:
-			ViewFeed.showFeeds(user, sc);
-			break;
-		case 2:
-			break;
-		case 3:
-			break;
-		case 4:
-			break;
-		case 5:
-			break;
-		case 6:
-			break;
-		case 7:
-			MainMenu.mainmenu();
-			break;
-		default:
-			System.out.println("Invalid choice");
+		while (true) {
+			System.out.println("1. View Feed");
+			System.out.println("2. View/Edit Profile");
+			System.out.println("3. Become a Publisher");
+			System.out.println("4. Find Publishers");
+			System.out.println("5. Top 10 List");
+			System.out.println("6. Suggetions");
+			System.out.println("7. Logout");
+			System.out.println("Enter your choice: ");
+			int choice = sc.nextInt();
+			switch (choice) {
+			case 1:
+				ViewFeed.showFeeds(user, sc);
+				break;
+			case 2:
+				Profile.userProfileMenu(user,sc);
+				break;
+			case 3:
+				
+				break;
+			case 4:
+				break;
+			case 5:
+				break;
+			case 6:
+				break;
+			case 7:
+				MainMenu.mainmenu();
+				break;
+			default:
+				System.out.println("Invalid choice");
+			}
 		}
 	}
 }
