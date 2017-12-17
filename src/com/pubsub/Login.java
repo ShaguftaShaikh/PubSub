@@ -14,7 +14,7 @@ public class Login {
 
 	private static Map<String, User> allUsers = new HashMap<>();
 
-	public void login(String username, String password, Scanner sc) throws IOException {
+	public void login(String username, String password, Scanner sc) throws IOException, ClassNotFoundException {
 		// TODO Auto-generated method stub
 		allUsers = User.readAllUser();
 		boolean validate = false;
@@ -40,7 +40,7 @@ public class Login {
 		}
 	}
 
-	public void landingMenu(Scanner sc, User user) throws IOException {
+	public void landingMenu(Scanner sc, User user) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException, ClassNotFoundException {
 		while (true) {
 			System.out.println("1. View Feed");
 			System.out.println("2. View/Edit Profile");

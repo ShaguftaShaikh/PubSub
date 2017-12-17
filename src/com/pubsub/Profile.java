@@ -1,6 +1,8 @@
 package com.pubsub;
 
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Scanner;
@@ -10,7 +12,8 @@ import com.pubsub.dao.User;
 
 public class Profile {
 
-	public void userProfileMenu(User user, Scanner sc) throws IOException {
+	public void userProfileMenu(User user, Scanner sc)
+			throws IOException, NoSuchAlgorithmException, InvalidKeySpecException, ClassNotFoundException {
 		System.out.println("Name: " + user.getName());
 		System.out.println();
 
@@ -97,6 +100,16 @@ public class Profile {
 						}
 						break;
 					case 2:
+						user = editInterestedCategory(user, sc);
+						if (!user.isPublisher()) {
+							Map<String, User> allUser = User.readUser();
+							allUser.put(user.getName(), user);
+							User.writeUser(allUser);
+						} else {
+							Map<String, User> allUser = User.readPublisher();
+							allUser.put(user.getName(), user);
+							User.writePublisher(allUser);
+						}
 						break;
 					case 3:
 						break;
@@ -125,20 +138,29 @@ public class Profile {
 
 		int c = sc.nextInt();
 		if (c == 1) {
-			return unSubScribePublisher(user,sc);
-		} else if(c==2){
+			return unSubScribePublisher(user, sc);
+		} else if (c == 2) {
 			return subscribePublisher(user, sc);
 		} else {
 			return user;
 		}
 	}
 
-	public User editInterestedCategory(User user, Scanner sc) {
-		Set<String> userInterest = user.getUserInterest();
-		if (userInterest == null || !(userInterest.isEmpty())) {
+	public User editInterestedCategory(User user, Scanner sc)
+			throws NoSuchAlgorithmException, InvalidKeySpecException, ClassNotFoundException, IOException {
+		System.out.println("1. Remove Category");
+		System.out.println("2. Add Category");
+		System.out.println("3. Exit");
 
+		int c = sc.nextInt();
+		if (c == 1) {
+			return removeCategory(user, sc);
+		} else if (c == 2) {
+			return addCategory(user, sc);
+		} else {
+			return user;
 		}
-		return null;
+
 	}
 
 	public User unSubScribePublisher(User user, Scanner sc) {
@@ -191,4 +213,56 @@ public class Profile {
 		return user;
 	}
 
+	public User removeCategory(User user, Scanner sc)
+			throws NoSuchAlgorithmException, InvalidKeySpecException, ClassNotFoundException, IOException {
+		Set<String> userInterest = user.getUserInterest();
+		if (userInterest != null && !(userInterest.isEmpty())) {
+			while (true) {
+				System.out.println("Interested Categories are: ");
+				Iterator<String> itr = userInterest.iterator();
+				String[] str = new String[userInterest.size()];
+				int i = 0;
+				while (itr.hasNext()) {
+					str[i] = itr.next();
+					System.out.println(i + 1 + ". " + str[i]);
+					i++;
+				}
+				System.out.println(i + 1 + ". Exit");
+
+				System.out.println("Choose to remove: ");
+				int choice = sc.nextInt();
+				if (choice > i + 1 || choice < 1) {
+					System.out.println("Invalid choice");
+				} else if (choice == i + 1) {
+					return user;
+				} else {
+					System.out.println(str[choice - 1] + " has sucessfully removed");
+					userInterest.remove(str[choice - 1]);
+					user.setUserInterest(userInterest);
+				}
+			}
+		} else {
+			System.out.println("You do not have set any interest");
+			System.out.println("Want to add some?(y/n): ");
+			char ch = sc.next().charAt(0);
+			if (ch == 'y') {
+				return new SignUp().chooseInterest(user, sc);
+			} else if (ch == 'n') {
+				return user;
+			} else {
+				System.out.println("Invalid choice");
+			}
+		}
+
+		return user;
+	}
+
+	public User addCategory(User user, Scanner sc)
+			throws NoSuchAlgorithmException, InvalidKeySpecException, ClassNotFoundException, IOException {
+		Set<String> userInterest = user.getUserInterest();
+		User u = new SignUp().chooseInterest(user, sc);
+		userInterest.addAll(u.getUserInterest());
+		user.setUserInterest(userInterest);
+		return user;
+	}
 }

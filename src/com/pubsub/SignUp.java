@@ -112,7 +112,7 @@ public class SignUp implements Serializable {
 		}
 	}
 
-	private User chooseInterest(User user, Scanner sc)
+	protected User chooseInterest(User user, Scanner sc)
 			throws NoSuchAlgorithmException, InvalidKeySpecException, ClassNotFoundException, IOException {
 		// TODO Auto-generated method stub
 		Category category = new CategoryImpl();
