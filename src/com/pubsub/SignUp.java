@@ -52,13 +52,14 @@ public class SignUp implements Serializable {
 		Map<String, User> allUsers = User.readAllUser();
 		Map<String, User> publishers = User.readPublisher();
 
+		Set<User> subscribedPublishers = new HashSet<>();
 		String username = "";
 		System.out.println("Enter name: ");
 		username = sc.nextLine();
 
 		if (allUsers != null) {
 			User user = new User();
-			Set<User> subscribedPublishers = new HashSet<>();
+			
 
 			// check if username already been in use
 			if (allUsers.containsKey(username)) {
@@ -77,7 +78,7 @@ public class SignUp implements Serializable {
 				user.setPublisher(false);
 
 				// ask user to subscribe publisher
-				subscribedPublishers = choosePublishers(user, publishers, sc);
+				subscribedPublishers = choosePublishers(user, publishers, sc,subscribedPublishers);
 				System.out.println(subscribedPublishers);
 				user.setSubscribedPublishers(subscribedPublishers);
 
@@ -89,7 +90,6 @@ public class SignUp implements Serializable {
 		} else {
 			allUsers = new HashMap<String, User>();
 			User user = new User();
-			Set<User> subscribedPublishers = new HashSet<>();
 
 			System.out.println("Enter password: ");
 			String password = sc.nextLine();
@@ -100,7 +100,7 @@ public class SignUp implements Serializable {
 			user.setPassword(password);
 			user.setPublisher(false);
 
-			subscribedPublishers = choosePublishers(user, publishers, sc);
+			subscribedPublishers = choosePublishers(user, publishers, sc,subscribedPublishers);
 			user.setSubscribedPublishers(subscribedPublishers);
 
 			allUsers.put(user.getName(), user);
@@ -141,13 +141,13 @@ public class SignUp implements Serializable {
 	}
 
 	@SuppressWarnings("unused")
-	private Set<User> choosePublishers(User user, Map<String, User> publishers, Scanner sc) {
+	private Set<User> choosePublishers(User user, Map<String, User> publishers, Scanner sc,Set<User> subscribedPublishers) {
 		System.out.println("1. Show publishers based on your interest");
 		System.out.println("2. Show all publishers");
 		System.out.println("3. Exit");
 
 		int choice = sc.nextInt();
-		Set<User> subscribedPublishers = new HashSet<>();
+		
 		List<User> selectedPublisher = new ArrayList<>();
 		Set<String> userInterest = user.getUserInterest();
 
@@ -182,7 +182,7 @@ public class SignUp implements Serializable {
 					if (c > i || c <= 0) {
 						System.out.println("Invalid Choice");
 					} else if (c == i) {
-						return choosePublishers(user, publishers, sc);
+						return choosePublishers(user, publishers, sc,subscribedPublishers);
 					} else {
 						subscribedPublishers.add(selectedPublisher.get(c - 1));
 					}
@@ -205,7 +205,7 @@ public class SignUp implements Serializable {
 				if (c > i || c <= 0) {
 					System.out.println("Invalid Choice");
 				} else if (c == i) {
-					return choosePublishers(user, publishers, sc);
+					return choosePublishers(user, publishers, sc,subscribedPublishers);
 				} else {
 					subscribedPublishers.add(selectedPublisher.get(c - 1));
 				}
