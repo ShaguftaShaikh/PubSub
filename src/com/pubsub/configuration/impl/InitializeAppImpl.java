@@ -19,6 +19,7 @@ import java.util.Set;
 import com.pubsub.configuration.InitializeApp;
 import com.pubsub.dao.PublisherArticle;
 import com.pubsub.dao.User;
+import com.pubsub.utils.PubSubConstants;
 
 public class InitializeAppImpl implements InitializeApp {
 
@@ -30,7 +31,7 @@ public class InitializeAppImpl implements InitializeApp {
 		if (articles == null) {
 			articles = new ArrayList<>();
 			try {
-				FileReader fileReader = new FileReader(new File("resources/defaultArticles.txt"));
+				FileReader fileReader = new FileReader(new File(PubSubConstants.LOAD_ARTICLE_FILE));
 				BufferedReader bufferedReader = new BufferedReader(fileReader);
 				SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy");
 
@@ -75,7 +76,7 @@ public class InitializeAppImpl implements InitializeApp {
 		if (allUsers == null) {
 			allUsers = new HashMap<>();
 			try {
-				FileReader fileReader = new FileReader(new File("resources/users.txt"));
+				FileReader fileReader = new FileReader(new File(PubSubConstants.LOAD_PUBLISHER_FILE));
 				BufferedReader bufferedReader = new BufferedReader(fileReader);
 
 				String line = "";
@@ -145,7 +146,7 @@ public class InitializeAppImpl implements InitializeApp {
 		if (allUsers == null) {
 			allUsers = new HashMap<>();
 			try {
-				FileReader fileReader = new FileReader(new File("resources/normalUsers.txt"));
+				FileReader fileReader = new FileReader(new File(PubSubConstants.LOAD_USERS_FILE));
 				BufferedReader bufferedReader = new BufferedReader(fileReader);
 
 				String line = "";

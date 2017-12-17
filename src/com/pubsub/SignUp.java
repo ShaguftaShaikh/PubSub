@@ -85,7 +85,7 @@ public class SignUp implements Serializable {
 				allUsers.put(user.getName(), user);
 				User.writeUser(allUsers);
 
-				Login.landingMenu(sc, user);
+				new Login().landingMenu(sc, user);
 			}
 		} else {
 			allUsers = new HashMap<String, User>();
@@ -108,7 +108,7 @@ public class SignUp implements Serializable {
 			// write all user to users.obj file
 			User.writeUser(allUsers);
 
-			Login.landingMenu(sc, user);
+			new Login().landingMenu(sc, user);
 		}
 	}
 
@@ -141,7 +141,7 @@ public class SignUp implements Serializable {
 	}
 
 	@SuppressWarnings("unused")
-	private Set<User> choosePublishers(User user, Map<String, User> publishers, Scanner sc,Set<User> subscribedPublishers) {
+	protected Set<User> choosePublishers(User user, Map<String, User> publishers, Scanner sc,Set<User> subscribedPublishers) {
 		System.out.println("1. Show publishers based on your interest");
 		System.out.println("2. Show all publishers");
 		System.out.println("3. Exit");
@@ -173,7 +173,11 @@ public class SignUp implements Serializable {
 					Iterator<User> itr = selectedPublisher.iterator();
 					int i = 1;
 					while (itr.hasNext()) {
-						System.out.println(i + ". " + itr.next().getName());
+						String name = itr.next().getName();
+						if(subscribedPublishers.contains(name))
+							System.out.println(i + ". " + name + " - already subscribed");
+						else
+							System.out.println(i + ". " + name);
 						i++;
 					}
 					System.out.println(i + ". Exit");
@@ -195,7 +199,11 @@ public class SignUp implements Serializable {
 				for (Entry<String, User> entry : publishers.entrySet()) {
 					User u = entry.getValue();
 					if (u != null) {
-						System.out.println(i + ". " + u.getName());
+						String name = u.getName();
+						if(subscribedPublishers.contains(name))
+							System.out.println(i + ". " + name + " - already subscribed");
+						else
+							System.out.println(i + ". " + name);
 						i++;
 					}
 				}

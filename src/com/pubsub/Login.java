@@ -1,5 +1,6 @@
 package com.pubsub;
 
+import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.HashMap;
@@ -13,11 +14,11 @@ public class Login {
 
 	private static Map<String, User> allUsers = new HashMap<>();
 
-	public void login(String username, String password, Scanner sc) {
+	public void login(String username, String password, Scanner sc) throws IOException {
 		// TODO Auto-generated method stub
 		allUsers = User.readAllUser();
 		boolean validate = false;
-		
+
 		if (allUsers != null) {
 			if (allUsers.containsKey(username)) {
 				User user = allUsers.get(username);
@@ -39,11 +40,15 @@ public class Login {
 		}
 	}
 
-	public static void landingMenu(Scanner sc, User user) {
+	public void landingMenu(Scanner sc, User user) throws IOException {
 		while (true) {
 			System.out.println("1. View Feed");
 			System.out.println("2. View/Edit Profile");
-			System.out.println("3. Become a Publisher");
+			if (user.isPublisher()) {
+				System.out.println("3. Publish an Article");
+			} else {
+				System.out.println("3. Become a Publisher");
+			}
 			System.out.println("4. Find Publishers");
 			System.out.println("5. Top 10 List");
 			System.out.println("6. Suggetions");
@@ -55,10 +60,10 @@ public class Login {
 				ViewFeed.showFeeds(user, sc);
 				break;
 			case 2:
-				Profile.userProfileMenu(user,sc);
+				new Profile().userProfileMenu(user, sc);
 				break;
 			case 3:
-				
+
 				break;
 			case 4:
 				break;

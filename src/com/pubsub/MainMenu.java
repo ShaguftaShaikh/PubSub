@@ -28,7 +28,7 @@ public class MainMenu implements Serializable {
 
 	}
 
-	public static void mainmenu() {
+	public static void mainmenu() throws IOException {
 		// TODO Auto-generated method stub
 		Scanner sc = new Scanner(System.in);
 		String username, password;
