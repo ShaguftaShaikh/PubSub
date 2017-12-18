@@ -115,43 +115,67 @@ public class Login {
 		}
 	}
 
-	private void showPublisherBasedOnInterest(User user, Scanner sc) {
+	private void showPublisherBasedOnInterest(User user, Scanner sc) throws IOException {
 		// TODO Auto-generated method stub
 		Map<String, User> allPublishers = User.readPublisher();
+		allPublishers.remove("initializedArticles");
+		allPublishers.remove("initiallizedFollowers");
+		
 		List<User> publishers = new ArrayList<>();
 		publishers.addAll(allPublishers.values());
 
 		Set<String> userInterest = user.getUserInterest();
 		List<User> matchedInterest = new ArrayList<>();
-		while (true) {
-			if (userInterest != null && !(userInterest.isEmpty())) {
-				for (String interest : userInterest) {
-					for (User u : publishers) {
-						Set<String> publisherInterest = u.getUserInterest();
-						if (publisherInterest.contains(interest)) {
-							matchedInterest.add(u);
-						}
+
+		if (userInterest != null && !(userInterest.isEmpty())) {
+			
+			for (String interest : userInterest) {
+				for (User u : publishers) {
+					Set<String> publisherInterest = u.getUserInterest();
+					if (publisherInterest.contains(interest)) {
+						matchedInterest.add(u);
 					}
 				}
-				int i = 1;
-				for (User u : matchedInterest) {
-					System.out.println(i + ". " + u.getName());
-					i++;
-				}
-				System.out.println(i + ". Exit");
-				System.out.println("Choose publisher: ");
-				int choice = sc.nextInt();
-				if (choice > i || choice < 1) {
-					System.out.println("Invalid choice");
-				} else if (choice == i) {
-					break;
-				} else {
-					
-				}
-			} else {
-				System.out.println("You did not set any interest");
-				System.out.println("Want to add some?(y/n):");
 			}
+			if (!matchedInterest.isEmpty()) {
+				while (true) {
+					int i = 1;
+					for (User u : matchedInterest) {
+						System.out.println(i + ". " + u.getName());
+						i++;
+					}
+					System.out.println(i + ". Exit");
+					System.out.println("Choose publisher: ");
+					int choice = sc.nextInt();
+					if (choice > i || choice < 1) {
+						System.out.println("Invalid choice");
+					} else if (choice == i) {
+						break;
+					} else {
+						Set<User> subscribedPublishers = user.getSubscribedPublishers();
+						if (subscribedPublishers != null) {
+							subscribedPublishers.add(matchedInterest.get(choice - 1));
+							user.setSubscribedPublishers(subscribedPublishers);
+						} else {
+							subscribedPublishers = new HashSet<>();
+							subscribedPublishers.add(matchedInterest.get(choice - 1));
+							user.setSubscribedPublishers(subscribedPublishers);
+						}
+
+						User u = allPublishers.get(matchedInterest.get(choice - 1).getName());
+						Set<User> followers = u.getFollowers();
+						followers.add(user);
+						u.setFollowers(followers);
+						allPublishers.put(u.getName(), u);
+
+						User.updateUser(u);
+						User.updateUser(user);
+					}
+				}
+			}
+		} else {
+			System.out.println("You did not set any interest");
+			System.out.println("Want to add some?(y/n):");
 		}
 	}
 
@@ -209,6 +233,7 @@ public class Login {
 						allPublishers.put(u.getName(), u);
 
 						User.updateUser(u);
+						User.updateUser(user);
 					}
 				}
 			} else if (ch == 'n') {
