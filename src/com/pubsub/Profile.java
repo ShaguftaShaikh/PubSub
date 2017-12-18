@@ -4,10 +4,12 @@ import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
 
+import com.pubsub.dao.PublisherArticle;
 import com.pubsub.dao.User;
 
 public class Profile {
@@ -82,40 +84,33 @@ public class Profile {
 					System.out.println("1. Edit publishers you follow");
 					System.out.println("2. Edit category you are interested in");
 					System.out.println("3. Remove article you have publsihed");
-					System.out.println("4. Change password");
-					System.out.println("5. Exit");
+					System.out.println("4. Publish an Article");
+					System.out.println("5. Change password");
+					System.out.println("6. Exit");
 
 					int choice = sc.nextInt();
 					switch (choice) {
 					case 1:
 						user = editUserSubscribedPublishers(user, sc);
-						if (!user.isPublisher()) {
-							Map<String, User> allUser = User.readUser();
-							allUser.put(user.getName(), user);
-							User.writeUser(allUser);
-						} else {
-							Map<String, User> allUser = User.readPublisher();
-							allUser.put(user.getName(), user);
-							User.writePublisher(allUser);
-						}
+						updateUser(user);
 						break;
 					case 2:
 						user = editInterestedCategory(user, sc);
-						if (!user.isPublisher()) {
-							Map<String, User> allUser = User.readUser();
-							allUser.put(user.getName(), user);
-							User.writeUser(allUser);
-						} else {
-							Map<String, User> allUser = User.readPublisher();
-							allUser.put(user.getName(), user);
-							User.writePublisher(allUser);
-						}
+						updateUser(user);
 						break;
 					case 3:
+						user = removePublishedArticle(user, sc);
+						updateUser(user);
 						break;
 					case 4:
+
 						break;
 					case 5:
+						if (user.isPublisher()) {
+
+						}
+						break;
+					case 6:
 						new Login().landingMenu(sc, user);
 						break;
 					default:
@@ -130,7 +125,56 @@ public class Profile {
 		}
 	}
 
-	public User editUserSubscribedPublishers(User user, Scanner sc) {
+	private void updateUser(User user) throws IOException {
+		// TODO Auto-generated method stub
+		if (!user.isPublisher()) {
+			Map<String, User> allUser = User.readUser();
+			allUser.put(user.getName(), user);
+			User.writeUser(allUser);
+		} else {
+			Map<String, User> allUser = User.readPublisher();
+			allUser.put(user.getName(), user);
+			User.writePublisher(allUser);
+		}
+	}
+
+	private User removePublishedArticle(User user, Scanner sc) {
+		// TODO Auto-generated method stub
+		if (user.isPublisher()) {
+			while (true) {
+				List<PublisherArticle> publishedArticles = user.getPublishedArticles();
+				if (publishedArticles != null && !(publishedArticles.isEmpty())) {
+					int i = 1;
+					for (PublisherArticle publisherArticle : publishedArticles) {
+						String title = publisherArticle.getArticleTitle();
+						System.out.println(i + ". " + title);
+						i++;
+					}
+					System.out.println(i + ". Exit");
+					System.out.println("Choose an article to remove: ");
+					int choice = sc.nextInt();
+					if (choice > i || choice < 1) {
+						System.out.println("Invalid choice");
+					} else if (choice == i) {
+						return user;
+					} else {
+						String article = publishedArticles.get(choice - 1).getArticleTitle();
+						System.out.println(article + " has successfully removed");
+						publishedArticles.remove(publishedArticles.get(choice - 1));
+						user.setPublishedArticles(publishedArticles);
+					}
+				} else {
+					System.out.println("You do not have published any article");
+					return user;
+				}
+			}
+		} else {
+			System.out.println("You do not have published any article");
+		}
+		return user;
+	}
+
+	private User editUserSubscribedPublishers(User user, Scanner sc) {
 
 		System.out.println("1. Unsubscribe a publisher");
 		System.out.println("2. Subscribe a publisher");
@@ -146,7 +190,7 @@ public class Profile {
 		}
 	}
 
-	public User editInterestedCategory(User user, Scanner sc)
+	private User editInterestedCategory(User user, Scanner sc)
 			throws NoSuchAlgorithmException, InvalidKeySpecException, ClassNotFoundException, IOException {
 		System.out.println("1. Remove Category");
 		System.out.println("2. Add Category");
@@ -163,7 +207,7 @@ public class Profile {
 
 	}
 
-	public User unSubScribePublisher(User user, Scanner sc) {
+	private User unSubScribePublisher(User user, Scanner sc) {
 		Set<User> subscribedPublishers = user.getSubscribedPublishers();
 		if (subscribedPublishers != null && !(subscribedPublishers.isEmpty())) {
 			while (true) {
@@ -206,14 +250,14 @@ public class Profile {
 		return user;
 	}
 
-	public User subscribePublisher(User user, Scanner sc) {
+	private User subscribePublisher(User user, Scanner sc) {
 		Set<User> subscribedPublishers = user.getSubscribedPublishers();
 		Map<String, User> publishers = User.readPublisher();
 		user.setSubscribedPublishers(new SignUp().choosePublishers(user, publishers, sc, subscribedPublishers));
 		return user;
 	}
 
-	public User removeCategory(User user, Scanner sc)
+	private User removeCategory(User user, Scanner sc)
 			throws NoSuchAlgorithmException, InvalidKeySpecException, ClassNotFoundException, IOException {
 		Set<String> userInterest = user.getUserInterest();
 		if (userInterest != null && !(userInterest.isEmpty())) {
@@ -257,7 +301,7 @@ public class Profile {
 		return user;
 	}
 
-	public User addCategory(User user, Scanner sc)
+	private User addCategory(User user, Scanner sc)
 			throws NoSuchAlgorithmException, InvalidKeySpecException, ClassNotFoundException, IOException {
 		Set<String> userInterest = user.getUserInterest();
 		User u = new SignUp().chooseInterest(user, sc);

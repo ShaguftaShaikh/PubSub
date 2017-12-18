@@ -3,7 +3,10 @@ package com.pubsub;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
@@ -50,7 +53,7 @@ public class Login {
 				System.out.println("3. Become a Publisher");
 			}
 			System.out.println("4. Find Publishers");
-			System.out.println("5. Top 10 List");
+			System.out.println("5. Top 5 Publishers");
 			System.out.println("6. Suggetions");
 			System.out.println("7. Logout");
 			System.out.println("Enter your choice: ");
@@ -68,6 +71,7 @@ public class Login {
 			case 4:
 				break;
 			case 5:
+				topPublishers(user,sc);
 				break;
 			case 6:
 				break;
@@ -78,5 +82,25 @@ public class Login {
 				System.out.println("Invalid choice");
 			}
 		}
+	}
+
+	private List<User> topPublishers(User user, Scanner sc) {
+		// TODO Auto-generated method stub
+		Map<String,User> publishers = User.readPublisher();
+		publishers.remove("initializedArticles");
+		publishers.remove("initiallizedFollowers");
+		
+		List<User> allPublishers = new ArrayList<>();
+		allPublishers.addAll(publishers.values());
+		
+		Collections.sort(allPublishers);
+		
+		for(int i = 0;i<5;i++){
+			String name = allPublishers.get(i).getName();
+			int followers = allPublishers.get(i).getFollowers().size();
+			System.out.println(name+" - "+followers+" followers");
+		}
+		System.out.println();
+		return allPublishers;
 	}
 }

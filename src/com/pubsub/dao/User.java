@@ -13,7 +13,7 @@ import java.util.Set;
 
 import com.pubsub.utils.PubSubConstants;
 
-public class User implements Serializable {
+public class User implements Serializable,Comparable<User> {
 
 	/**
 	 * 
@@ -174,4 +174,14 @@ public class User implements Serializable {
 		Map<String, User> allUsers = readPublisher();
 		return allUsers.get(name);
 	}
+
+	@Override
+	public int compareTo(User user) {
+		// TODO Auto-generated method stub
+		int compareFollowersSize = ((User)user).getFollowers().size();
+		return compareFollowersSize - this.followers.size();
+	}
+
+	
+	
 }

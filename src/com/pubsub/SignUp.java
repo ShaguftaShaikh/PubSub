@@ -125,7 +125,6 @@ public class SignUp implements Serializable {
 			}
 
 			System.out.println(i + 1 + ". Exit");
-
 			System.out.println("Choose your interest");
 			int choice = sc.nextInt();
 
