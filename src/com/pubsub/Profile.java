@@ -92,15 +92,15 @@ public class Profile {
 					switch (choice) {
 					case 1:
 						user = editUserSubscribedPublishers(user, sc);
-						updateUser(user);
+						User.updateUser(user);
 						break;
 					case 2:
 						user = editInterestedCategory(user, sc);
-						updateUser(user);
+						User.updateUser(user);
 						break;
 					case 3:
 						user = removePublishedArticle(user, sc);
-						updateUser(user);
+						User.updateUser(user);
 						break;
 					case 4:
 
@@ -122,19 +122,6 @@ public class Profile {
 			} else {
 				System.out.println("Inavlid Input");
 			}
-		}
-	}
-
-	private void updateUser(User user) throws IOException {
-		// TODO Auto-generated method stub
-		if (!user.isPublisher()) {
-			Map<String, User> allUser = User.readUser();
-			allUser.put(user.getName(), user);
-			User.writeUser(allUser);
-		} else {
-			Map<String, User> allUser = User.readPublisher();
-			allUser.put(user.getName(), user);
-			User.writePublisher(allUser);
 		}
 	}
 
@@ -174,7 +161,7 @@ public class Profile {
 		return user;
 	}
 
-	private User editUserSubscribedPublishers(User user, Scanner sc) {
+	private User editUserSubscribedPublishers(User user, Scanner sc) throws IOException {
 
 		System.out.println("1. Unsubscribe a publisher");
 		System.out.println("2. Subscribe a publisher");
@@ -207,8 +194,10 @@ public class Profile {
 
 	}
 
-	private User unSubScribePublisher(User user, Scanner sc) {
+	private User unSubScribePublisher(User user, Scanner sc) throws IOException {
 		Set<User> subscribedPublishers = user.getSubscribedPublishers();
+		Map<String, User> publishers = User.readPublisher();
+
 		if (subscribedPublishers != null && !(subscribedPublishers.isEmpty())) {
 			while (true) {
 				System.out.println("Subscribed publishers are: ");
@@ -229,9 +218,20 @@ public class Profile {
 				} else if (choice == i + 1) {
 					return user;
 				} else {
+					// updating user subscription list
 					System.out.println(str[choice - 1] + " has sucessfully unsubscribed");
+
+					// Updating publisher follower list
+					User publisher = publishers.get(str[choice - 1].getName());
 					subscribedPublishers.remove(str[choice - 1]);
 					user.setSubscribedPublishers(subscribedPublishers);
+
+					Set<User> publisherFollower = publisher.getFollowers();
+					publisherFollower.remove(user);
+					publisher.setFollowers(publisherFollower);
+					
+					User.updateUser(publisher);
+
 				}
 			}
 		} else {
@@ -239,7 +239,6 @@ public class Profile {
 			System.out.println("Want to follow some?(y/n): ");
 			char ch = sc.next().charAt(0);
 			if (ch == 'y') {
-				Map<String, User> publishers = User.readPublisher();
 				user.setSubscribedPublishers(new SignUp().choosePublishers(user, publishers, sc, subscribedPublishers));
 			} else if (ch == 'n') {
 				return user;
@@ -250,7 +249,7 @@ public class Profile {
 		return user;
 	}
 
-	private User subscribePublisher(User user, Scanner sc) {
+	private User subscribePublisher(User user, Scanner sc) throws IOException {
 		Set<User> subscribedPublishers = user.getSubscribedPublishers();
 		Map<String, User> publishers = User.readPublisher();
 		user.setSubscribedPublishers(new SignUp().choosePublishers(user, publishers, sc, subscribedPublishers));

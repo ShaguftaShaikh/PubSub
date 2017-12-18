@@ -140,7 +140,7 @@ public class SignUp implements Serializable {
 	}
 
 	@SuppressWarnings("unused")
-	protected Set<User> choosePublishers(User user, Map<String, User> publishers, Scanner sc,Set<User> subscribedPublishers) {
+	protected Set<User> choosePublishers(User user, Map<String, User> publishers, Scanner sc,Set<User> subscribedPublishers) throws IOException {
 		System.out.println("1. Show publishers based on your interest");
 		System.out.println("2. Show all publishers");
 		System.out.println("3. Exit");
@@ -188,6 +188,13 @@ public class SignUp implements Serializable {
 						return choosePublishers(user, publishers, sc,subscribedPublishers);
 					} else {
 						subscribedPublishers.add(selectedPublisher.get(c - 1));
+						
+						//Updating publisher follower
+						User u = publishers.get(selectedPublisher.get(c - 1));
+						Set<User> sub = u.getFollowers();
+						sub.add(user);
+						u.setFollowers(sub);
+						User.updateUser(u);
 					}
 				}
 			}
@@ -215,6 +222,13 @@ public class SignUp implements Serializable {
 					return choosePublishers(user, publishers, sc,subscribedPublishers);
 				} else {
 					subscribedPublishers.add(selectedPublisher.get(c - 1));
+					
+					//Updating publisher follower
+					User u = publishers.get(selectedPublisher.get(c - 1).getName());
+					Set<User> sub = u.getFollowers();
+					sub.add(user);
+					u.setFollowers(sub);
+					User.updateUser(u);
 				}
 			}
 

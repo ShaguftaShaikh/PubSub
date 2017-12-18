@@ -13,7 +13,7 @@ import java.util.Set;
 
 import com.pubsub.utils.PubSubConstants;
 
-public class User implements Serializable,Comparable<User> {
+public class User implements Serializable, Comparable<User> {
 
 	/**
 	 * 
@@ -178,10 +178,38 @@ public class User implements Serializable,Comparable<User> {
 	@Override
 	public int compareTo(User user) {
 		// TODO Auto-generated method stub
-		int compareFollowersSize = ((User)user).getFollowers().size();
+		int compareFollowersSize = ((User) user).getFollowers().size();
 		return compareFollowersSize - this.followers.size();
 	}
 
-	
-	
+	public static void updateUser(User user) throws IOException {
+		// TODO Auto-generated method stub
+		if (!user.isPublisher()) {
+			Map<String, User> allUser = User.readUser();
+			allUser.put(user.getName(), user);
+			User.writeUser(allUser);
+		} else {
+			Map<String, User> allUser = User.readPublisher();
+			allUser.put(user.getName(), user);
+			User.writePublisher(allUser);
+		}
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		// TODO Auto-generated method stub
+		boolean returnValue = false;
+		if (obj instanceof User) {
+			User u = (User) obj;
+			returnValue = u.getName().equals(this.name);
+		}
+		return returnValue;
+	}
+
+	@Override
+	public int hashCode() {
+		int hash = 7;
+		hash = 17 * hash + (this.name != null ? this.name.hashCode() : 0);
+		return hash;
+	}
 }

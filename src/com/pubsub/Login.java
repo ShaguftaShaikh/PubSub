@@ -6,9 +6,11 @@ import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.Set;
 
 import com.pubsub.dao.User;
 import com.pubsub.utils.PasswordHash;
@@ -43,7 +45,8 @@ public class Login {
 		}
 	}
 
-	public void landingMenu(Scanner sc, User user) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException, ClassNotFoundException {
+	public void landingMenu(Scanner sc, User user)
+			throws IOException, NoSuchAlgorithmException, InvalidKeySpecException, ClassNotFoundException {
 		while (true) {
 			System.out.println("1. View Feed");
 			System.out.println("2. View/Edit Profile");
@@ -71,9 +74,10 @@ public class Login {
 			case 4:
 				break;
 			case 5:
-				topPublishers(user,sc);
+				topPublishers(user, sc);
 				break;
 			case 6:
+				suggetionOfPublishers(user, sc);
 				break;
 			case 7:
 				MainMenu.mainmenu();
@@ -84,23 +88,206 @@ public class Login {
 		}
 	}
 
-	private List<User> topPublishers(User user, Scanner sc) {
+	private void suggetionOfPublishers(User user, Scanner sc) throws IOException {
 		// TODO Auto-generated method stub
-		Map<String,User> publishers = User.readPublisher();
+
+		System.out.println("1. Suggest top publishers");
+		System.out.println("2. Show all publishers");
+		System.out.println("3. Show publisher based on interest");
+		System.out.println("4. Exit");
+
+		int choice = sc.nextInt();
+		switch (choice) {
+		case 1:
+			topPublishers(user, sc);
+			break;
+		case 2:
+			showAllPublishers(user, sc);
+			break;
+		case 3:
+			showPublisherBasedOnInterest(user, sc);
+			break;
+		case 4:
+			break;
+		default:
+			System.out.println("Invalid choice");
+			break;
+		}
+	}
+
+	private void showPublisherBasedOnInterest(User user, Scanner sc) {
+		// TODO Auto-generated method stub
+		Map<String, User> allPublishers = User.readPublisher();
+		List<User> publishers = new ArrayList<>();
+		publishers.addAll(allPublishers.values());
+
+		Set<String> userInterest = user.getUserInterest();
+		List<User> matchedInterest = new ArrayList<>();
+		while (true) {
+			if (userInterest != null && !(userInterest.isEmpty())) {
+				for (String interest : userInterest) {
+					for (User u : publishers) {
+						Set<String> publisherInterest = u.getUserInterest();
+						if (publisherInterest.contains(interest)) {
+							matchedInterest.add(u);
+						}
+					}
+				}
+				int i = 1;
+				for (User u : matchedInterest) {
+					System.out.println(i + ". " + u.getName());
+					i++;
+				}
+				System.out.println(i + ". Exit");
+				System.out.println("Choose publisher: ");
+				int choice = sc.nextInt();
+				if (choice > i || choice < 1) {
+					System.out.println("Invalid choice");
+				} else if (choice == i) {
+					break;
+				} else {
+					
+				}
+			} else {
+				System.out.println("You did not set any interest");
+				System.out.println("Want to add some?(y/n):");
+			}
+		}
+	}
+
+	private void showAllPublishers(User user, Scanner sc) throws IOException {
+		// TODO Auto-generated method stub
+		Map<String, User> allPublishers = User.readPublisher();
+		allPublishers.remove("initializedArticles");
+		allPublishers.remove("initiallizedFollowers");
+
+		boolean flag = false;
+
+		List<User> publishers = new ArrayList<>();
+		publishers.addAll(allPublishers.values());
+		while (true) {
+			int i = 1;
+			for (User u : publishers) {
+				System.out.println(i + ". " + u.getName() + " - " + u.getFollowers().size() + " followers");
+				i++;
+			}
+			System.out.println(i + ". Exit");
+			System.out.println("Want to follow some?(y/n): ");
+			char ch = sc.next().charAt(0);
+			if (ch == 'y') {
+				while (true) {
+					i = 1;
+					for (User u : publishers) {
+						System.out.println(i + ". " + u.getName() + " - " + u.getFollowers().size() + " followers");
+						i++;
+					}
+					System.out.println(i + ". Exit");
+					System.out.println("Choose publisher to follow: ");
+					int choice = sc.nextInt();
+					if (choice > i || choice < 1) {
+						System.out.println("Invalid choice");
+					} else if (choice == i) {
+						User.updateUser(user);
+						flag = true;
+						break;
+					} else {
+						Set<User> subscribedPublishers = user.getSubscribedPublishers();
+						if (subscribedPublishers != null) {
+							subscribedPublishers.add(publishers.get(choice - 1));
+							user.setSubscribedPublishers(subscribedPublishers);
+						} else {
+							subscribedPublishers = new HashSet<>();
+							subscribedPublishers.add(publishers.get(choice - 1));
+							user.setSubscribedPublishers(subscribedPublishers);
+						}
+
+						User u = allPublishers.get(publishers.get(choice - 1).getName());
+
+						Set<User> followers = u.getFollowers();
+						followers.add(user);
+						u.setFollowers(followers);
+						allPublishers.put(u.getName(), u);
+
+						User.updateUser(u);
+					}
+				}
+			} else if (ch == 'n') {
+				break;
+			} else {
+				System.out.println("Invalid choice");
+			}
+
+			if (flag) {
+				break;
+			}
+		}
+	}
+
+	private void topPublishers(User user, Scanner sc) throws IOException {
+		// TODO Auto-generated method stub
+		Map<String, User> publishers = User.readPublisher();
 		publishers.remove("initializedArticles");
 		publishers.remove("initiallizedFollowers");
-		
+
 		List<User> allPublishers = new ArrayList<>();
 		allPublishers.addAll(publishers.values());
-		
+
+		boolean f = false;
+
 		Collections.sort(allPublishers);
-		
-		for(int i = 0;i<5;i++){
-			String name = allPublishers.get(i).getName();
-			int followers = allPublishers.get(i).getFollowers().size();
-			System.out.println(name+" - "+followers+" followers");
+		while (true) {
+			int i;
+			for (i = 0; i < 5; i++) {
+				String name = allPublishers.get(i).getName();
+				int followers = allPublishers.get(i).getFollowers().size();
+				System.out.println(i + 1 + ". " + name + " - " + followers + " followers");
+			}
+			System.out.println();
+			System.out.println("Want to follow them?(y/n): ");
+			char ch = sc.next().charAt(0);
+			if (ch == 'y') {
+				while (true) {
+					for (i = 0; i < 5; i++) {
+						String name = allPublishers.get(i).getName();
+						int followers = allPublishers.get(i).getFollowers().size();
+						System.out.println(i + 1 + ". " + name + " - " + followers + " followers");
+					}
+					System.out.println(i + 1 + ". Exit");
+
+					System.out.println("Enter your choice: ");
+					int choice = sc.nextInt();
+
+					if (choice > i + 1 || choice < 1) {
+						System.out.println("Invalid choice");
+					} else if (choice == i + 1) {
+						User.updateUser(user);
+						f = true;
+						break;
+					} else {
+						Set<User> subscribedPublishers = user.getSubscribedPublishers();
+						subscribedPublishers.add(allPublishers.get(choice - 1));
+						user.setSubscribedPublishers(subscribedPublishers);
+
+						User u = publishers.get(allPublishers.get(choice - 1).getName());
+
+						Set<User> followers = u.getFollowers();
+						followers.add(user);
+						u.setFollowers(followers);
+						publishers.put(u.getName(), u);
+
+						User.updateUser(u);
+
+					}
+				}
+			} else if (ch == 'n') {
+				break;
+			} else {
+				System.out.println("Invalid choice");
+			}
+
+			if (f) {
+				break;
+			}
 		}
-		System.out.println();
-		return allPublishers;
 	}
 }
