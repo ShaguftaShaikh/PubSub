@@ -21,7 +21,9 @@ public class ViewFeed {
 				&& (subscribedPublisher == null || subscribedPublisher.isEmpty())) {
 			int i = 1;
 			for (PublisherArticle article : allArticles) {
-				System.out.println(i + ". " + article.getArticleTitle() + " - " + article.getArticleCategory());
+				System.out.println(i + ". " + article.getArticleTitle() + " - " 
+						+ article.getArticleCategory() + " by "
+						+ article.getPublishedBy().getName());
 				i++;
 			}
 			System.out.println(i + ". Exit");
@@ -32,7 +34,7 @@ public class ViewFeed {
 			} else if (choice == i) {
 
 			} else {
-				new Editor(allArticles.get(choice - 1).getArticle());
+				new Editor().readArticle(allArticles.get(choice - 1));
 			}
 		} else {
 			List<PublisherArticle> articlesMapping = new ArrayList<>();
@@ -60,10 +62,13 @@ public class ViewFeed {
 					}
 				}
 			}
-			int i = 1;
+
 			while (true) {
+				int i = 1;
 				for (PublisherArticle publisherArticle : articlesMapping) {
-					System.out.println(i + ". " + publisherArticle.getArticleTitle());
+					System.out.println(i + ". " + publisherArticle.getArticleTitle() + " - "
+							+ publisherArticle.getArticleCategory() + " by "
+							+ publisherArticle.getPublishedBy().getName());
 					i++;
 				}
 				System.out.println(i + ". Exit");
@@ -74,7 +79,7 @@ public class ViewFeed {
 				} else if (choice == i) {
 
 				} else {
-					new Editor(articlesMapping.get(choice - 1).getArticle());
+					new Editor().readArticle(articlesMapping.get(choice - 1));
 				}
 			}
 		}

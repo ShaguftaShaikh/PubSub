@@ -69,7 +69,7 @@ public class Login {
 				new Profile().userProfileMenu(user, sc);
 				break;
 			case 3:
-
+				new PublishArticle().publishArticle(user, sc);
 				break;
 			case 4:
 				break;

@@ -222,14 +222,14 @@ public class InitializeAppImpl implements InitializeApp {
 				}
 			}
 			publishers.put("initiallizedFollowers", null);
-			/*
-			 * for (Entry<String, User> e : publishers.entrySet()) { User u
-			 * =e.getValue(); System.out.println(u.getName());
-			 * System.out.println(u.getFollowers());
-			 * System.out.println(u.getUserInterest());
-			 * System.out.println(u.getPublishedArticles());
-			 * System.out.println(); }
-			 */
+			
+			
+			/*List<User> ul = new ArrayList<>();
+			ul.addAll(publishers.values());
+			//ul.remove(null);
+			for(User u:ul){
+				System.out.println(u.getName()+"- "+u.getFollowers().size());
+			}*/
 			try {
 				User.writePublisher(publishers);
 			} catch (IOException e) {

@@ -1,13 +1,21 @@
 package com.pubsub;
 
+import java.awt.Color;
 import java.awt.FlowLayout;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.util.Set;
 
+import javax.swing.ButtonGroup;
+import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
+
+import com.pubsub.dao.PublisherArticle;
+import com.pubsub.dao.User;
 
 public class Editor extends JFrame {
 
@@ -16,48 +24,102 @@ public class Editor extends JFrame {
 	 */
 	private static final long serialVersionUID = -795301287419819751L;
 
-	JPanel mainPanel;
-	JTextArea editorArea;
-	JScrollPane scrollPane;
+	public void readArticle(PublisherArticle publisherArticle) {
 
-	public Editor(String str) {
-		this.setVisible(true);
-		this.setSize(500, 300);
-		this.setTitle("Editor");
-		
-		
-	/*	this.addWindowListener(new WindowAdapter() {
-			public void windowClosing(WindowEvent event) {
-				System.exit(0);
-			}
-		});*/
-
-		mainPanel = new JPanel();
+		JPanel mainPanel = new JPanel();
 		mainPanel = (JPanel) getContentPane();
 		mainPanel.setLayout(new FlowLayout());
-		
-		editorArea = new JTextArea(100,100);
-		scrollPane = new JScrollPane(editorArea);
-		
-		editorArea.setText(str);
+
+		JTextArea editorArea = new JTextArea(20, 70);
+		JScrollPane scrollPane = new JScrollPane(editorArea);
+
+		JLabel articleLable = new JLabel("Article:");
+		JLabel likeLable = new JLabel("Likes:");
+		JLabel publishedByLable = new JLabel("Published By:");
+		JLabel articleTitle = new JLabel(publisherArticle.getArticleTitle());
+
+		articleLable.setForeground(Color.DARK_GRAY);
+		likeLable.setForeground(Color.DARK_GRAY);
+		publishedByLable.setForeground(Color.DARK_GRAY);
+
+		JLabel publishedByField = new JLabel(publisherArticle.getPublishedBy().getName());
+		publishedByField.setForeground(Color.BLACK);
+
+		JLabel likeField = new JLabel(String.valueOf(publisherArticle.getLikes()));
+		likeField.setForeground(Color.BLACK);
+
+		editorArea.setText(publisherArticle.getArticle());
 		editorArea.setLineWrap(true);
 		editorArea.setWrapStyleWord(true);
 		editorArea.setEditable(false);
-		
-		mainPanel.add(editorArea);
+
+		mainPanel.add(articleLable);
+		mainPanel.add(articleTitle);
 		mainPanel.add(scrollPane);
+		mainPanel.add(publishedByLable);
+		mainPanel.add(publishedByField);
+		mainPanel.add(likeLable);
+		mainPanel.add(likeField);
+
+		this.setVisible(true);
+		this.setSize(800, 500);
+		this.setTitle("Editor");
+		this.setLayout(new FlowLayout());
+		this.setResizable(false);
+
+	}
+
+	public void writeArticle(User user) {
+		JPanel mainPanel = new JPanel();
+		mainPanel = (JPanel) getContentPane();
+		mainPanel.setLayout(new FlowLayout());
+
+		JTextArea editorArea = new JTextArea(20, 70);
+		JScrollPane scrollPane = new JScrollPane(editorArea);
+
+		JLabel articleLable = new JLabel("Article:");
+		JLabel articleTitle = new JLabel("Article Title: ");
+		JLabel tagCategory = new JLabel("Choose Category: ");
+
+		JTextField articleTitleField = new JTextField();
+		articleTitleField.setColumns(70);
+
+		articleLable.setForeground(Color.DARK_GRAY);
+
+		editorArea.setLineWrap(true);
+		editorArea.setWrapStyleWord(true);
+		editorArea.setEditable(true);
+
+		mainPanel.add(articleTitle);
+		mainPanel.add(articleTitleField);
+		mainPanel.add(articleLable);
+		mainPanel.add(scrollPane);
+		mainPanel.add(tagCategory);
+
+		Set<String> userInterest = user.getUserInterest();
+		ButtonGroup categoryGroup = new ButtonGroup();
+
+		JRadioButton[] buttons = new JRadioButton[userInterest.size()];
+
+		int i = 0;
+		for (String interest : userInterest) {
+			buttons[i] = new JRadioButton(interest);
+			categoryGroup.add(buttons[i]);
+			mainPanel.add(buttons[i]);
+			i++;
+		}
+		
+		JButton publish = new JButton("publish");
+		mainPanel.add(publish);
+
+		this.setVisible(true);
+		this.setSize(800, 500);
+		this.setTitle("Editor");
+		this.setLayout(new FlowLayout());
+		this.setResizable(false);
 	}
 
 	public static void main(String[] args) {
-		Editor e = new Editor("Suhasini Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque vel augue ut nisi fringilla scelerisque vel non nibh. Nam euismod quis sem non consequat. Quisque sem orci, pulvinar tempus tristique non, ultricies eget sem. Proin hendrerit posuere nibh nec convallis. Nam in laoreet mi. Nam volutpat molestie mauris luctus semper. Vivamus nec sapien ut sapien ornare faucibus. Vivamus id risus malesuada purus pharetra consectetur eu id odio. Curabitur ultricies eros sed iaculis imperdiet. Nulla cursus at eros at pretium. Nulla volutpat placerat tristique. Phasellus mattis tincidunt nunc, in consectetur enim interdum nec. Donec est nulla, facilisis eu aliquet quis, molestie suscipit sapien.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque vel augue ut nisi fringilla scelerisque vel non nibh. Nam euismod quis sem non consequat. Quisque sem orci, pulvinar tempus tristique non, ultricies eget sem. Proin hendrerit posuere nibh nec convallis. Nam in laoreet mi. Nam volutpat molestie mauris luctus semper. Vivamus nec sapien ut sapien ornare faucibus. Vivamus id risus malesuada purus pharetra consectetur eu id odio. Curabitur ultricies eros sed iaculis imperdiet. Nulla cursus at eros at pretium. Nulla volutpat placerat tristique. Phasellus mattis tincidunt nunc, in consectetur enim interdum nec. Donec est nulla, facilisis eu aliquet quis, molestie suscipit sapien.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque vel augue ut nisi fringilla scelerisque vel non nibh. Nam euismod quis sem non consequat. Quisque sem orci, pulvinar tempus tristique non, ultricies eget sem. Proin hendrerit posuere nibh nec convallis. Nam in laoreet mi. Nam volutpat molestie mauris luctus semper. Vivamus nec sapien ut sapien ornare faucibus. Vivamus id risus malesuada purus pharetra consectetur eu id odio. Curabitur ultricies eros sed iaculis imperdiet. Nulla cursus at eros at pretium. Nulla volutpat placerat tristique. Phasellus mattis tincidunt nunc, in consectetur enim interdum nec. Donec est nulla, facilisis eu aliquet quis, molestie suscipit sapien.");
-		/*e.setVisible(true);
-		e.setSize(500, 300);
-		e.setTitle("Editor");
-		e.addWindowListener(new WindowAdapter() {
-			public void windowClosing(WindowEvent event) {
-				System.exit(0);
-			}
-		});*/
+		// new Editor().writeArticle();
 	}
-
 }

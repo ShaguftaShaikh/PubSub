@@ -51,6 +51,8 @@ public class SignUp implements Serializable {
 
 		Map<String, User> allUsers = User.readAllUser();
 		Map<String, User> publishers = User.readPublisher();
+		publishers.remove("initializedArticles");
+		publishers.remove("initiallizedFollowers");
 
 		Set<User> subscribedPublishers = new HashSet<>();
 		String username = "";
@@ -59,7 +61,6 @@ public class SignUp implements Serializable {
 
 		if (allUsers != null) {
 			User user = new User();
-			
 
 			// check if username already been in use
 			if (allUsers.containsKey(username)) {
@@ -78,8 +79,7 @@ public class SignUp implements Serializable {
 				user.setPublisher(false);
 
 				// ask user to subscribe publisher
-				subscribedPublishers = choosePublishers(user, publishers, sc,subscribedPublishers);
-				System.out.println(subscribedPublishers);
+				subscribedPublishers = choosePublishers(user, publishers, sc, subscribedPublishers);
 				user.setSubscribedPublishers(subscribedPublishers);
 
 				allUsers.put(user.getName(), user);
@@ -100,7 +100,7 @@ public class SignUp implements Serializable {
 			user.setPassword(password);
 			user.setPublisher(false);
 
-			subscribedPublishers = choosePublishers(user, publishers, sc,subscribedPublishers);
+			subscribedPublishers = choosePublishers(user, publishers, sc, subscribedPublishers);
 			user.setSubscribedPublishers(subscribedPublishers);
 
 			allUsers.put(user.getName(), user);
@@ -121,7 +121,11 @@ public class SignUp implements Serializable {
 		int i;
 		while (true) {
 			for (i = 0; i < categories.size(); i++) {
-				System.out.println(i + 1 + ". " + categories.get(i));
+				if (userChoiceCategory.contains(categories.get(i))) {
+					System.out.println(i + 1 + ". " + categories.get(i) + " - Added");
+				} else {
+					System.out.println(i + 1 + ". " + categories.get(i));
+				}
 			}
 
 			System.out.println(i + 1 + ". Exit");
@@ -140,13 +144,14 @@ public class SignUp implements Serializable {
 	}
 
 	@SuppressWarnings("unused")
-	protected Set<User> choosePublishers(User user, Map<String, User> publishers, Scanner sc,Set<User> subscribedPublishers) throws IOException {
+	protected Set<User> choosePublishers(User user, Map<String, User> publishers, Scanner sc,
+			Set<User> subscribedPublishers) throws IOException {
 		System.out.println("1. Show publishers based on your interest");
 		System.out.println("2. Show all publishers");
 		System.out.println("3. Exit");
 
 		int choice = sc.nextInt();
-		
+
 		List<User> selectedPublisher = new ArrayList<>();
 		Set<String> userInterest = user.getUserInterest();
 
@@ -172,9 +177,10 @@ public class SignUp implements Serializable {
 					Iterator<User> itr = selectedPublisher.iterator();
 					int i = 1;
 					while (itr.hasNext()) {
-						String name = itr.next().getName();
-						if(subscribedPublishers.contains(name))
-							System.out.println(i + ". " + name + " - already subscribed");
+						User u = itr.next();
+						String name = u.getName();
+						if (subscribedPublishers.contains(u))
+							System.out.println(i + ". " + name + " - subscribed");
 						else
 							System.out.println(i + ". " + name);
 						i++;
@@ -185,12 +191,12 @@ public class SignUp implements Serializable {
 					if (c > i || c <= 0) {
 						System.out.println("Invalid Choice");
 					} else if (c == i) {
-						return choosePublishers(user, publishers, sc,subscribedPublishers);
+						return choosePublishers(user, publishers, sc, subscribedPublishers);
 					} else {
 						subscribedPublishers.add(selectedPublisher.get(c - 1));
-						
-						//Updating publisher follower
-						User u = publishers.get(selectedPublisher.get(c - 1));
+
+						// Updating publisher follower
+						User u = publishers.get(selectedPublisher.get(c - 1).getName());
 						Set<User> sub = u.getFollowers();
 						sub.add(user);
 						u.setFollowers(sub);
@@ -206,8 +212,8 @@ public class SignUp implements Serializable {
 					User u = entry.getValue();
 					if (u != null) {
 						String name = u.getName();
-						if(subscribedPublishers.contains(name))
-							System.out.println(i + ". " + name + " - already subscribed");
+						if (subscribedPublishers.contains(u))
+							System.out.println(i + ". " + name + " - subscribed");
 						else
 							System.out.println(i + ". " + name);
 						i++;
@@ -219,11 +225,11 @@ public class SignUp implements Serializable {
 				if (c > i || c <= 0) {
 					System.out.println("Invalid Choice");
 				} else if (c == i) {
-					return choosePublishers(user, publishers, sc,subscribedPublishers);
+					return choosePublishers(user, publishers, sc, subscribedPublishers);
 				} else {
 					subscribedPublishers.add(selectedPublisher.get(c - 1));
-					
-					//Updating publisher follower
+
+					// Updating publisher follower
 					User u = publishers.get(selectedPublisher.get(c - 1).getName());
 					Set<User> sub = u.getFollowers();
 					sub.add(user);
