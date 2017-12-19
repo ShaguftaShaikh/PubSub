@@ -26,14 +26,15 @@ public class InitializeAppImpl implements InitializeApp {
 	@Override
 	public void initializeDefaultArticles() {
 		// TODO Auto-generated method stub
-		List<PublisherArticle> articles = PublisherArticle.readArticles();
+		Map<String, List<PublisherArticle>> articles = PublisherArticle.readArticles();
 
 		if (articles == null) {
-			articles = new ArrayList<>();
+			articles = new HashMap<>();
 			try {
 				FileReader fileReader = new FileReader(new File(PubSubConstants.LOAD_ARTICLE_FILE));
 				BufferedReader bufferedReader = new BufferedReader(fileReader);
 				SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy");
+				List<PublisherArticle> articleList;
 
 				String line = "";
 				String publishedBy = "";
@@ -51,7 +52,14 @@ public class InitializeAppImpl implements InitializeApp {
 					User user = User.getUserByName(publishedBy);
 					p.setPublishedBy(user);
 
-					articles.add(p);
+					if (articles.containsKey(user.getName())) {
+						articleList = articles.get(user.getName());
+						articleList.add(p);
+					} else {
+						articleList = new ArrayList<>();
+						articleList.add(p);
+					}
+					articles.put(user.getName(), articleList);
 				}
 				bufferedReader.close();
 				PublisherArticle.writeArticles(articles);
@@ -113,7 +121,7 @@ public class InitializeAppImpl implements InitializeApp {
 	@Override
 	public void initializePublisherToArticles() {
 		// TODO Auto-generated method stub
-		List<PublisherArticle> articles = PublisherArticle.readArticles();
+		/*Map<String, List<PublisherArticle>> articles = PublisherArticle.readArticles();
 		Map<String, User> allUsers = User.readPublisher();
 
 		if (!allUsers.containsKey("initializedArticles")) {
@@ -121,8 +129,12 @@ public class InitializeAppImpl implements InitializeApp {
 			for (Map.Entry<String, User> entry : allUsers.entrySet()) {
 				User entryUser = entry.getValue();
 				List<PublisherArticle> publishedArticles = new ArrayList<>();
+				
+				for(){
+					
+				}
 
-				for (PublisherArticle article : articles) {
+				for (PublisherArticle article : articles.values()) {
 					User user = article.getPublishedBy();
 					if (entryUser.getName().equalsIgnoreCase(user.getName())) {
 						publishedArticles.add(article);
@@ -138,7 +150,7 @@ public class InitializeAppImpl implements InitializeApp {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		}
+		}*/
 	}
 
 	public void initializeApplicationUser() {
@@ -222,14 +234,13 @@ public class InitializeAppImpl implements InitializeApp {
 				}
 			}
 			publishers.put("initiallizedFollowers", null);
-			
-			
-			/*List<User> ul = new ArrayList<>();
-			ul.addAll(publishers.values());
-			//ul.remove(null);
-			for(User u:ul){
-				System.out.println(u.getName()+"- "+u.getFollowers().size());
-			}*/
+
+			/*
+			 * List<User> ul = new ArrayList<>();
+			 * ul.addAll(publishers.values()); //ul.remove(null); for(User
+			 * u:ul){
+			 * System.out.println(u.getName()+"- "+u.getFollowers().size()); }
+			 */
 			try {
 				User.writePublisher(publishers);
 			} catch (IOException e) {

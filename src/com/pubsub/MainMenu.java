@@ -17,7 +17,7 @@ public class MainMenu implements Serializable {
 		InitializeAppImpl impl = new InitializeAppImpl();
 		impl.initializeUsers();
 		impl.initializeDefaultArticles();
-		impl.initializePublisherToArticles();
+		//impl.initializePublisherToArticles();
 		impl.initializeApplicationUser();
 		impl.initializeFollowersToPublishers();
 	}

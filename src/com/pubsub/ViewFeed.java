@@ -3,6 +3,7 @@ package com.pubsub;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
 
@@ -15,16 +16,20 @@ public class ViewFeed {
 		Set<String> userIntereset = user.getUserInterest();
 		Set<User> subscribedPublisher = user.getSubscribedPublishers();
 
-		List<PublisherArticle> allArticles = PublisherArticle.readArticles();
+		Map<String, List<PublisherArticle>> allArticles = PublisherArticle.readArticles();
+		List<PublisherArticle> articlesList = new ArrayList<>();
 
 		if ((userIntereset == null || userIntereset.isEmpty())
 				&& (subscribedPublisher == null || subscribedPublisher.isEmpty())) {
+
 			int i = 1;
-			for (PublisherArticle article : allArticles) {
-				System.out.println(i + ". " + article.getArticleTitle() + " - " 
-						+ article.getArticleCategory() + " by "
-						+ article.getPublishedBy().getName());
-				i++;
+			for (List<PublisherArticle> articles : allArticles.values()) {
+				for (PublisherArticle article : articles) {
+					System.out.println(i + ". " + article.getArticleTitle() + " - " + article.getArticleCategory()
+							+ " by " + article.getPublishedBy().getName());
+					articlesList.add(article);
+					i++;
+				}
 			}
 			System.out.println(i + ". Exit");
 			System.out.println("Choose Article to read: ");
@@ -34,7 +39,7 @@ public class ViewFeed {
 			} else if (choice == i) {
 
 			} else {
-				new Editor().readArticle(allArticles.get(choice - 1));
+				new Editor().readArticle(articlesList.get(choice - 1));
 			}
 		} else {
 			List<PublisherArticle> articlesMapping = new ArrayList<>();
@@ -43,9 +48,11 @@ public class ViewFeed {
 				Iterator<String> itr = userIntereset.iterator();
 				while (itr.hasNext()) {
 					String interest = itr.next();
-					for (PublisherArticle article : allArticles) {
-						if (article.getArticleCategory().equalsIgnoreCase(interest)) {
-							articlesMapping.add(article);
+					for (List<PublisherArticle> articles : allArticles.values()) {
+						for (PublisherArticle article : articles) {
+							if (article.getArticleCategory().equalsIgnoreCase(interest)) {
+								articlesMapping.add(article);
+							}
 						}
 					}
 				}
@@ -54,10 +61,12 @@ public class ViewFeed {
 				Iterator<User> itr = subscribedPublisher.iterator();
 				while (itr.hasNext()) {
 					String publisher = itr.next().getName();
-					for (PublisherArticle article : allArticles) {
-						User u = article.getPublishedBy();
-						if (u.getName().equalsIgnoreCase(publisher)) {
-							articlesMapping.add(article);
+					for (List<PublisherArticle> articles : allArticles.values()) {
+						for (PublisherArticle article : articles) {
+							User u = article.getPublishedBy();
+							if (u.getName().equalsIgnoreCase(publisher)) {
+								articlesMapping.add(article);
+							}
 						}
 					}
 				}

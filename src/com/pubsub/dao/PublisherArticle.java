@@ -9,6 +9,7 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import com.pubsub.utils.PubSubConstants;
 
@@ -82,14 +83,14 @@ public class PublisherArticle implements Serializable{
 	}
 
 	@SuppressWarnings("unchecked")
-	public static List<PublisherArticle> readArticles() {
+	public static Map<String,List<PublisherArticle>> readArticles() {
 		// TODO Auto-generated method stub
-		List<PublisherArticle> publishers = null;
+		Map<String,List<PublisherArticle>> publishers = null;
 		FileInputStream fileInputStream;
 		try {
 			fileInputStream = new FileInputStream(PubSubConstants.ARTICLE_FILE);
 			ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
-			publishers = (List<PublisherArticle>) objectInputStream.readObject();
+			publishers = (Map<String,List<PublisherArticle>>) objectInputStream.readObject();
 			objectInputStream.close();
 		} catch (FileNotFoundException e) {
 
@@ -101,11 +102,15 @@ public class PublisherArticle implements Serializable{
 		return publishers;
 	}
 
-	public static void writeArticles(List<PublisherArticle> publishers) throws IOException {
+	public static void writeArticles(Map<String,List<PublisherArticle>> publishers) throws IOException {
 		// TODO Auto-generated method stub
 		FileOutputStream fileOutputStream = new FileOutputStream(PubSubConstants.ARTICLE_FILE);
 		ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
 		objectOutputStream.writeObject(publishers);
 		objectOutputStream.close();
+	}
+	
+	public static void updateArticle(PublisherArticle article,User user){
+		
 	}
 }
