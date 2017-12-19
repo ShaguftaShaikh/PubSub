@@ -86,7 +86,7 @@ public class ViewFeed {
 				if (choice > i || choice < 1) {
 					System.out.println("Invalid Choice!");
 				} else if (choice == i) {
-
+					break;
 				} else {
 					new Editor().readArticle(articlesMapping.get(choice - 1));
 				}

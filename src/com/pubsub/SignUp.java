@@ -198,9 +198,16 @@ public class SignUp implements Serializable {
 						// Updating publisher follower
 						User u = publishers.get(selectedPublisher.get(c - 1).getName());
 						Set<User> sub = u.getFollowers();
-						sub.add(user);
-						u.setFollowers(sub);
-						User.updateUser(u);
+						if (sub != null) {
+							sub.add(user);
+							u.setFollowers(sub);
+							User.updateUser(u);
+						} else {
+							sub = new HashSet<>();
+							sub.add(user);
+							u.setFollowers(sub);
+							User.updateUser(u);
+						}
 					}
 				}
 			}
@@ -232,9 +239,16 @@ public class SignUp implements Serializable {
 					// Updating publisher follower
 					User u = publishers.get(selectedPublisher.get(c - 1).getName());
 					Set<User> sub = u.getFollowers();
-					sub.add(user);
-					u.setFollowers(sub);
-					User.updateUser(u);
+					if (sub != null) {
+						sub.add(user);
+						u.setFollowers(sub);
+						User.updateUser(u);
+					} else {
+						sub = new HashSet<>();
+						sub.add(user);
+						u.setFollowers(sub);
+						User.updateUser(u);
+					}
 				}
 			}
 

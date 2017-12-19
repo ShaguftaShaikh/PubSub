@@ -7,20 +7,20 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import com.pubsub.utils.PubSubConstants;
 
-public class PublisherArticle implements Serializable{
+public class PublisherArticle implements Serializable {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 6L;
-	
-	
+
 	private String article;
 	private User publishedBy;
 	private String articleCategory;
@@ -79,18 +79,19 @@ public class PublisherArticle implements Serializable{
 	@Override
 	public String toString() {
 		// TODO Auto-generated method stub
-		return articleTitle+" "+ article + " " + publishedBy + " " + articleCategory + " " + likes + " " + publishingDate;
+		return articleTitle + " " + article + " " + publishedBy + " " + articleCategory + " " + likes + " "
+				+ publishingDate;
 	}
 
 	@SuppressWarnings("unchecked")
-	public static Map<String,List<PublisherArticle>> readArticles() {
+	public static Map<String, List<PublisherArticle>> readArticles() {
 		// TODO Auto-generated method stub
-		Map<String,List<PublisherArticle>> publishers = null;
+		Map<String, List<PublisherArticle>> publishers = null;
 		FileInputStream fileInputStream;
 		try {
 			fileInputStream = new FileInputStream(PubSubConstants.ARTICLE_FILE);
 			ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
-			publishers = (Map<String,List<PublisherArticle>>) objectInputStream.readObject();
+			publishers = (Map<String, List<PublisherArticle>>) objectInputStream.readObject();
 			objectInputStream.close();
 		} catch (FileNotFoundException e) {
 
@@ -102,15 +103,25 @@ public class PublisherArticle implements Serializable{
 		return publishers;
 	}
 
-	public static void writeArticles(Map<String,List<PublisherArticle>> publishers) throws IOException {
+	public static void writeArticles(Map<String, List<PublisherArticle>> publishers) throws IOException {
 		// TODO Auto-generated method stub
 		FileOutputStream fileOutputStream = new FileOutputStream(PubSubConstants.ARTICLE_FILE);
 		ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
 		objectOutputStream.writeObject(publishers);
 		objectOutputStream.close();
 	}
-	
-	public static void updateArticle(PublisherArticle article,User user){
-		
+
+	public static void updateArticles(PublisherArticle article, User user) throws IOException {
+		Map<String, List<PublisherArticle>> allArticles = PublisherArticle.readArticles();
+		List<PublisherArticle> userPublishedArticle = allArticles.get(user.getName());
+
+		if (userPublishedArticle != null && !(userPublishedArticle.isEmpty())) {
+			userPublishedArticle.add(article);
+		} else {
+			userPublishedArticle = new ArrayList<>();
+			userPublishedArticle.add(article);
+		}
+		allArticles.put(user.getName(), userPublishedArticle);
+		PublisherArticle.writeArticles(allArticles);
 	}
 }

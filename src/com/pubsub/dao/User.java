@@ -179,7 +179,9 @@ public class User implements Serializable, Comparable<User> {
 	public int compareTo(User user) {
 		// TODO Auto-generated method stub
 		int compareFollowersSize = ((User) user).getFollowers().size();
-		return compareFollowersSize - this.followers.size();
+		if(this.followers!=null)
+			return compareFollowersSize - this.followers.size();
+		return compareFollowersSize - 0;
 	}
 
 	public static void updateUser(User user) throws IOException {

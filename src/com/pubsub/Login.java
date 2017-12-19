@@ -120,7 +120,7 @@ public class Login {
 		Map<String, User> allPublishers = User.readPublisher();
 		allPublishers.remove("initializedArticles");
 		allPublishers.remove("initiallizedFollowers");
-		
+
 		List<User> publishers = new ArrayList<>();
 		publishers.addAll(allPublishers.values());
 
@@ -128,7 +128,7 @@ public class Login {
 		List<User> matchedInterest = new ArrayList<>();
 
 		if (userInterest != null && !(userInterest.isEmpty())) {
-			
+
 			for (String interest : userInterest) {
 				for (User u : publishers) {
 					Set<String> publisherInterest = u.getUserInterest();
@@ -164,9 +164,16 @@ public class Login {
 
 						User u = allPublishers.get(matchedInterest.get(choice - 1).getName());
 						Set<User> followers = u.getFollowers();
-						followers.add(user);
-						u.setFollowers(followers);
-						allPublishers.put(u.getName(), u);
+						if (followers != null) {
+							followers.add(user);
+							u.setFollowers(followers);
+							allPublishers.put(u.getName(), u);
+						} else {
+							followers = new HashSet<>();
+							followers.add(user);
+							u.setFollowers(followers);
+							allPublishers.put(u.getName(), u);
+						}
 
 						User.updateUser(u);
 						User.updateUser(user);
@@ -192,7 +199,11 @@ public class Login {
 		while (true) {
 			int i = 1;
 			for (User u : publishers) {
-				System.out.println(i + ". " + u.getName() + " - " + u.getFollowers().size() + " followers");
+				if (u.getFollowers() == null) {
+					System.out.println(i + ". " + u.getName() + " - 0 followers");
+				} else {
+					System.out.println(i + ". " + u.getName() + " - " + u.getFollowers().size() + " followers");
+				}
 				i++;
 			}
 			System.out.println(i + ". Exit");
@@ -202,7 +213,11 @@ public class Login {
 				while (true) {
 					i = 1;
 					for (User u : publishers) {
-						System.out.println(i + ". " + u.getName() + " - " + u.getFollowers().size() + " followers");
+						if (u.getFollowers() == null) {
+							System.out.println(i + ". " + u.getName() + " - 0 followers");
+						} else {
+							System.out.println(i + ". " + u.getName() + " - " + u.getFollowers().size() + " followers");
+						}
 						i++;
 					}
 					System.out.println(i + ". Exit");
@@ -228,9 +243,17 @@ public class Login {
 						User u = allPublishers.get(publishers.get(choice - 1).getName());
 
 						Set<User> followers = u.getFollowers();
-						followers.add(user);
-						u.setFollowers(followers);
-						allPublishers.put(u.getName(), u);
+
+						if (followers != null) {
+							followers.add(user);
+							u.setFollowers(followers);
+							allPublishers.put(u.getName(), u);
+						} else {
+							followers = new HashSet<>();
+							followers.add(user);
+							u.setFollowers(followers);
+							allPublishers.put(u.getName(), u);
+						}
 
 						User.updateUser(u);
 						User.updateUser(user);

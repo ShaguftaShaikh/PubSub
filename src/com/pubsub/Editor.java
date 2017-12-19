@@ -4,7 +4,12 @@ import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.swing.ButtonGroup;
@@ -80,6 +85,7 @@ public class Editor extends JFrame {
 	}
 
 	public void writeArticle(User user) {
+		
 		JPanel mainPanel = new JPanel();
 		mainPanel = (JPanel) getContentPane();
 		mainPanel.setLayout(new FlowLayout());
@@ -145,7 +151,7 @@ public class Editor extends JFrame {
 				} catch (Exception ex) {
 
 				}
-				
+
 				if (!article.isEmpty()) {
 					newArticle.setArticle(article);
 					if (!articleTitle.isEmpty()) {
@@ -155,26 +161,50 @@ public class Editor extends JFrame {
 							newArticle.setLikes(0);
 							newArticle.setPublishedBy(user);
 							newArticle.setPublishingDate(new Date());
-							
-							if(user.isPublisher()){
-								
+
+							if (user.isPublisher()) {
+								List<PublisherArticle> publishedArticles = user.getPublishedArticles();
+								publishedArticles.add(newArticle);
+								try {
+									User.updateUser(user);
+									PublisherArticle.updateArticles(newArticle, user);
+								} catch (IOException e1) {
+									// TODO Auto-generated catch block
+									e1.printStackTrace();
+								}
+							} else {
+								List<PublisherArticle> newPublisher = new ArrayList<>();
+								Map<String, User> allUsers = User.readUser();
+								allUsers.remove(user.getName());
+
+								newPublisher.add(newArticle);
+								user.setPublisher(true);
+								user.setFollowers(new HashSet<>());
+								user.setPublishedArticles(newPublisher);
+								try {
+									User.writeUser(allUsers);
+									User.updateUser(user);
+									PublisherArticle.updateArticles(newArticle, user);
+								} catch (IOException e1) {
+									// TODO Auto-generated catch block
+									e1.printStackTrace();
+								}
 							}
+							System.out.println("Successfully published");
+							dispose();
 						} else {
-							JOptionPane.showMessageDialog(null, "Choose Category", "Error",
-									JOptionPane.ERROR_MESSAGE);
+							JOptionPane.showMessageDialog(null, "Choose Category", "Error", JOptionPane.ERROR_MESSAGE);
 						}
 					} else {
 						JOptionPane.showMessageDialog(null, "Article title can not be empty", "Error",
 								JOptionPane.ERROR_MESSAGE);
 					}
 				} else {
-					JOptionPane.showMessageDialog(null, "Article can not be empty", "Error",
-							JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(null, "Article can not be empty", "Error", JOptionPane.ERROR_MESSAGE);
 				}
 
 			}
-		});
-
+		});	
 	}
 
 	public static void main(String[] args) {
