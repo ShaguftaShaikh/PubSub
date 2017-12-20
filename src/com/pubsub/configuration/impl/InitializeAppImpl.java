@@ -118,41 +118,6 @@ public class InitializeAppImpl implements InitializeApp {
 		}
 	}
 
-	@Override
-	public void initializePublisherToArticles() {
-		// TODO Auto-generated method stub
-		/*Map<String, List<PublisherArticle>> articles = PublisherArticle.readArticles();
-		Map<String, User> allUsers = User.readPublisher();
-
-		if (!allUsers.containsKey("initializedArticles")) {
-
-			for (Map.Entry<String, User> entry : allUsers.entrySet()) {
-				User entryUser = entry.getValue();
-				List<PublisherArticle> publishedArticles = new ArrayList<>();
-				
-				for(){
-					
-				}
-
-				for (PublisherArticle article : articles.values()) {
-					User user = article.getPublishedBy();
-					if (entryUser.getName().equalsIgnoreCase(user.getName())) {
-						publishedArticles.add(article);
-					}
-				}
-				entryUser.setPublishedArticles(publishedArticles);
-				entry.setValue(entryUser);
-			}
-			allUsers.put("initializedArticles", null);
-			try {
-				User.writePublisher(allUsers);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}*/
-	}
-
 	public void initializeApplicationUser() {
 		Map<String, User> allUsers = User.readUser();
 		if (allUsers == null) {

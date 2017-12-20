@@ -124,4 +124,33 @@ public class PublisherArticle implements Serializable {
 		allArticles.put(user.getName(), userPublishedArticle);
 		PublisherArticle.writeArticles(allArticles);
 	}
+
+	public static void updateRemovedArticle(PublisherArticle article, User user) throws IOException {
+		Map<String, List<PublisherArticle>> allArticles = PublisherArticle.readArticles();
+		List<PublisherArticle> userPublishedArticle = allArticles.get(user.getName());
+
+		if (userPublishedArticle != null && !(userPublishedArticle.isEmpty())) {
+			userPublishedArticle.remove(article);
+		}
+		allArticles.put(user.getName(), userPublishedArticle);
+		PublisherArticle.writeArticles(allArticles);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		// TODO Auto-generated method stub
+		boolean returnValue = false;
+		if (obj instanceof PublisherArticle) {
+			PublisherArticle p = (PublisherArticle) obj;
+			returnValue = p.getArticleTitle().equals(this.articleTitle);
+		}
+		return returnValue;
+	}
+	
+	@Override
+	public int hashCode() {
+		int hash = 7;
+		hash = 17 * hash + (this.articleTitle != null ? this.articleTitle.hashCode() : 0);
+		return hash;
+	}
 }

@@ -103,7 +103,7 @@ public class Profile {
 						User.updateUser(user);
 						break;
 					case 4:
-
+						new PublishArticle().publishArticle(user, sc);
 						break;
 					case 5:
 						if (user.isPublisher()) {
@@ -125,7 +125,7 @@ public class Profile {
 		}
 	}
 
-	private User removePublishedArticle(User user, Scanner sc) {
+	private User removePublishedArticle(User user, Scanner sc) throws IOException {
 		// TODO Auto-generated method stub
 		if (user.isPublisher()) {
 			while (true) {
@@ -147,8 +147,16 @@ public class Profile {
 					} else {
 						String article = publishedArticles.get(choice - 1).getArticleTitle();
 						System.out.println(article + " has successfully removed");
-						publishedArticles.remove(publishedArticles.get(choice - 1));
+
+						PublisherArticle removedArticle = publishedArticles.get(choice - 1);
+						List<PublisherArticle> userPublishedArticle = user.getPublishedArticles();
+						userPublishedArticle.remove(removedArticle);
+
+						publishedArticles.remove(removedArticle);
 						user.setPublishedArticles(publishedArticles);
+
+						PublisherArticle.updateRemovedArticle(removedArticle, user);
+						User.updateUser(user);
 					}
 				} else {
 					System.out.println("You do not have published any article");
@@ -229,7 +237,7 @@ public class Profile {
 					Set<User> publisherFollower = publisher.getFollowers();
 					publisherFollower.remove(user);
 					publisher.setFollowers(publisherFollower);
-					
+
 					User.updateUser(publisher);
 
 				}

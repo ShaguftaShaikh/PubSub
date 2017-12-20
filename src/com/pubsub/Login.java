@@ -63,7 +63,7 @@ public class Login {
 			int choice = sc.nextInt();
 			switch (choice) {
 			case 1:
-				ViewFeed.showFeeds(user, sc);
+				new ViewFeed().showFeeds(user, sc);
 				break;
 			case 2:
 				new Profile().userProfileMenu(user, sc);
@@ -72,6 +72,8 @@ public class Login {
 				new PublishArticle().publishArticle(user, sc);
 				break;
 			case 4:
+				sc.nextLine();
+				new FindPublishers().findPublisher(user,sc);
 				break;
 			case 5:
 				topPublishers(user, sc);

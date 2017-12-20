@@ -1,4 +1,4 @@
-package com.pubsub;
+package com.pubsub.configuration.impl;
 
 import java.awt.Color;
 import java.awt.FlowLayout;
